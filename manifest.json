@@ -1,0 +1,77 @@
+{
+    "background": {
+        "scripts": ["lib/send.js", "background.js"]
+    },
+    "browser_action": {
+        "browser_style": true,
+        "chrome_style": true,
+        "default_icon": {
+            "16": "logo.svg",
+            "32": "logo.svg",
+            "48": "logo.svg",
+            "64": "logo.svg",
+            "96": "logo.svg"
+        },
+        "default_popup": "html/toolbar.html",
+        "default_title": "Toolbar"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "web-extension-template@lukesrw"
+        }
+    },
+    "content_scripts": [
+        {
+            "js": ["foreground.js"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "description": "Web Extension Template",
+    "devtools_page": "html/developer.html",
+    "icons": {
+        "16": "logo.svg",
+        "32": "logo.svg",
+        "48": "logo.svg",
+        "64": "logo.svg",
+        "96": "logo.svg"
+    },
+    "manifest_version": 2,
+    "name": "Web Extension Template",
+    "omnibox": {
+        "keyword": "wet"
+    },
+    "options_ui": {
+        "browser_style": true,
+        "chrome_style": true,
+        "page": "html/options.html"
+    },
+    "page_action": {
+        "browser_style": true,
+        "default_icon": {
+            "16": "logo.svg",
+            "32": "logo.svg",
+            "48": "logo.svg",
+            "64": "logo.svg",
+            "96": "logo.svg"
+        },
+        "default_popup": "html/address_bar.html",
+        "default_title": "Address Bar",
+        "show_matches": ["<all_urls>"]
+    },
+    "permissions": ["contextMenus", "notifications"],
+    "sidebar_action": {
+        "browser_style": true,
+        "chrome_style": true,
+        "default_icon": {
+            "16": "logo.svg",
+            "32": "logo.svg",
+            "48": "logo.svg",
+            "64": "logo.svg",
+            "96": "logo.svg"
+        },
+        "default_panel": "html/sidebar.html",
+        "default_title": "Sidebar",
+        "open_at_install": true
+    },
+    "version": "1.0"
+}
