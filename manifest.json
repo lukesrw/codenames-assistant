@@ -7,7 +7,7 @@
     "content_scripts": [
         {
             "js": ["js/script.js"],
-            "matches": ["codenames.game/room/"]
+            "matches": ["https://codenames.game/room/*"]
         }
     ],
     "description": "Codenames Helper",
