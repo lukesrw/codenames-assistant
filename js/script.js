@@ -257,11 +257,13 @@ function doGroups() {
     });
 }
 
-document.querySelector(".creditsWrapper").style.bottom = "-4px";
+setTimeout(function () {
+    document.querySelector(".creditsWrapper").style.bottom = "-4px";
 
-setInterval(function () {
+    setInterval(function () {
+        getButton();
+    }, ONE_SECOND_IN_MS);
+
     getButton();
-}, ONE_SECOND_IN_MS);
-
-getButton();
-doGroups();
+    doGroups();
+}, ONE_SECOND_IN_MS * 4);
