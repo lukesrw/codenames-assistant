@@ -1,34 +1,22 @@
-# Web Extension Template Repository
+# Codenames Assistant
 
-## Contents
+## Features
 
-| Name          | Purpose                                              |
-| ------------- | ---------------------------------------------------- |
-| /html/        | Various HTML files for pages, popups, sidebars, etc. |
-| /lib/         | Helpers written to make life easier                  |
-| background.js | JavaScript file for background browser tasks         |
-| developer.js  | JavaScript file for developer tools tasks            |
-| foreground.js | JavaScript file for window/tab tasks                 |
-| logo.svg      | SVG to show in various places                        |
-| manifest.json | Web extension manifest file                          |
-| script.js     | JavaScript file loaded on all HTML files             |
-| style.css     | CSS file loaded on all HTML files                    |
+### Notes Sidebar
 
-## manifest.json
+Codenames Assistant adds a notepad in the red team's sidebar.
 
-| Property                  | Description                                         | Notes                                                             |
-| ------------------------- | --------------------------------------------------- | ----------------------------------------------------------------- |
-| background                | Scripts to be loaded during background operations   |                                                                   |
-| browser_action            | Settings for browser toolbar button                 | Remove "default_popup" to enable events                           |
-| browser_specific_settings | Settings for browser-specific items                 |                                                                   |
-| content_scripts           | Scripts to be loaded during foreground operations   | Set "matches" to control which URLs scripts load on               |
-| description               | Description of the Web Extension                    |                                                                   |
-| devtools_page             | Location of the developer tools load page           |                                                                   |
-| icons                     | Icons to use, at various sizes                      | Web apps want this to be an array, web extensions wants an object |
-| manifest_version          | Version of the manifest schema to use               | Always 2 for now                                                  |
-| name                      | Name of the Web Extension                           |                                                                   |
-| omnibox                   | Keyword to look for in the start of the address bar |                                                                   |
-| options_ui                | Settings for options interface                      |                                                                   |
-| permissions               | Permissions required by the extension               |                                                                   |
-| sidebar_action            | Settings for sidebar interface                      |                                                                   |
-| version                   | Version of the Web Extension                        |                                                                   |
+-   Make notes without using an external tool like notepad
+-   Button to update the notes with a list of cards (grouped by team)
+-   Button to automatically list word combinations, if there's a clue
+
+### "Define Button
+
+Codenames Assistant also adds a "Define" button when a clue has been given.
+
+This currently opens a new tab with the Merriam Webster definition of the clue.
+
+## Todo
+
+-   "Wikipedia" button, for things that aren't in the dictionary
+-   "Define" button for each card on the board, just in case
