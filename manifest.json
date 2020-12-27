@@ -1,7 +1,7 @@
 {
     "browser_specific_settings": {
         "gecko": {
-            "id": "codenames-helper@lukesrw"
+            "id": "codenames-assistant@lukesrw"
         }
     },
     "content_scripts": [
@@ -10,7 +10,7 @@
             "matches": ["https://codenames.game/room/*"]
         }
     ],
-    "description": "Codenames Helper",
+    "description": "Codenames Assistant",
     "icons": {
         "16": "img/logo-16.png",
         "32": "img/logo-32.png",
@@ -20,6 +20,6 @@
         "128": "img/logo-128.png"
     },
     "manifest_version": 2,
-    "name": "Codenames Helper",
+    "name": "Codenames Assistant",
     "version": "1.0"
 }
