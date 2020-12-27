@@ -10,6 +10,10 @@
             "matches": ["https://codenames.game/room/*"]
         }
     ],
+    "developer": {
+        "name": "Luke Wilson",
+        "url": "https://github.com/lukesrw/codenames-assistant/"
+    },
     "description": "Codenames Assistant",
     "icons": {
         "16": "img/logo-16.png",
