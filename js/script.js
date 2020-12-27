@@ -4,9 +4,6 @@
 
 var ONE_SECOND_IN_MS = 1000;
 
-var cards;
-var notes;
-
 /**
  * @returns {object} card name to colour map
  */
@@ -95,7 +92,8 @@ function getNotes() {
     var notes_heading;
     var notes_heading_title;
     var notes_heading_text;
-    var notes_heading_refresh;
+    var notes_heading_groups;
+    var notes_heading_combinations;
     var notes_container;
 
     if (!notes) {
@@ -118,18 +116,26 @@ function getNotes() {
         notes_heading.appendChild(notes_heading_title);
 
         notes_heading_text = document.createElement("span");
-        notes_heading_text.innerHTML = "Notes -&nbsp;";
+        notes_heading_text.innerHTML = "Notes";
         notes_heading_title.appendChild(notes_heading_text);
 
-        notes_heading_refresh = document.createElement("a");
-        notes_heading_refresh.classList.add("title");
-        notes_heading_refresh.innerText = "(refresh)";
-        notes_heading_refresh.href = "javascript:void 0";
-        notes_heading_refresh.onclick = function () {
-            // eslint-disable-next-line no-use-before-define
-            init();
-        };
-        notes_heading_title.appendChild(notes_heading_refresh);
+        notes_heading_groups = document.createElement("a");
+        notes_heading_groups.style.marginLeft = "0.5ch";
+        notes_heading_groups.classList.add("title");
+        notes_heading_groups.innerText = "(group)";
+        notes_heading_groups.href = "javascript:void 0";
+        // eslint-disable-next-line no-use-before-define
+        notes_heading_groups.onclick = doGroups;
+        notes_heading_title.appendChild(notes_heading_groups);
+
+        notes_heading_combinations = document.createElement("a");
+        notes_heading_combinations.style.marginLeft = "0.5ch";
+        notes_heading_combinations.classList.add("title");
+        notes_heading_combinations.innerText = "(combinations)";
+        notes_heading_combinations.href = "javascript:void 0";
+        // eslint-disable-next-line no-use-before-define
+        notes_heading_combinations.onclick = doCombinations;
+        notes_heading_title.appendChild(notes_heading_combinations);
 
         notes_container = document.createElement("textarea");
         notes_container.classList.add("flex-auto", "scroll");
@@ -143,6 +149,7 @@ function getNotes() {
 
     return notes.querySelector("textarea");
 }
+
 /**
  * @param {string} input string to transform
  * @returns {string} string in uppercase
@@ -165,6 +172,36 @@ function getClue() {
     var clue = document.querySelector(".clue:not(.logEntry)");
 
     return clue ? clue.innerText : "";
+}
+
+/**
+ * @returns {void}
+ */
+function doCombinations() {
+    var notes = getNotes();
+    var clue = upperCase(getClue());
+    var cards = getCards();
+
+    if (clue.length > 0) {
+        notes.value = "";
+
+        cards.some(function (group) {
+            if (group.name === "gray") {
+                group.cards.forEach(function (card) {
+                    var word = upperCase(card.querySelector(".word").innerText);
+
+                    notes.value += word + "\n";
+                    notes.value += "    - " + word + " " + clue + "\n";
+                    notes.value += "    - " + clue + " " + word + "\n";
+                    notes.value += "\n";
+                });
+
+                return true;
+            }
+
+            return false;
+        });
+    }
 }
 
 /**
@@ -202,11 +239,9 @@ function getButton() {
 /**
  * @returns {void}
  */
-function init() {
-    getButton();
-
-    cards = getCards();
-    notes = getNotes();
+function doGroups() {
+    var cards = getCards();
+    var notes = getNotes();
 
     // reset notes
     notes.value = "";
@@ -217,7 +252,7 @@ function init() {
         notes.value += upperCase(group.name) + ":";
 
         group.cards.forEach(function (card) {
-            notes.value += "\n- " + upperCase(card.querySelector(".word").innerText);
+            notes.value += "\n    - " + upperCase(card.querySelector(".word").innerText);
         });
     });
 }
@@ -228,4 +263,5 @@ setInterval(function () {
     getButton();
 }, ONE_SECOND_IN_MS);
 
-init();
+getButton();
+doGroups();
