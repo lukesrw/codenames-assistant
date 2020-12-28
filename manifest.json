@@ -1,4 +1,7 @@
 {
+    "background": {
+        "scripts": ["background.js"]
+    },
     "browser_specific_settings": {
         "gecko": {
             "id": "codenames-assistant@lukesrw"
@@ -10,11 +13,11 @@
             "matches": ["https://codenames.game/room/*"]
         }
     ],
+    "description": "Codenames Assistant",
     "developer": {
         "name": "Luke Wilson",
         "url": "https://github.com/lukesrw/codenames-assistant/"
     },
-    "description": "Codenames Assistant",
     "icons": {
         "16": "img/logo-16.png",
         "32": "img/logo-32.png",
@@ -25,5 +28,6 @@
     },
     "manifest_version": 2,
     "name": "Codenames Assistant",
+    "permissions": ["notifications"],
     "version": "1.0"
 }
