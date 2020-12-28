@@ -32,4 +32,3 @@ This currently opens a new tab with the Merriam Webster definition of the clue.
 
 -   "Wikipedia" button, for things that aren't in the dictionary (issue #1)
 -   "Define" button for each card on the board, just in case (issue #2)
--   Browser push notification for when a clue has been given (issue #3)
