@@ -1,8 +1,11 @@
+/*global browser chrome*/
 /* eslint-disable no-console */
 
 "use strict";
 
 var ONE_SECOND_IN_MS = 1000;
+var main = browser || chrome;
+var clue_last = false;
 
 /**
  * @returns {object} card name to colour map
@@ -170,8 +173,25 @@ function upperCase(input) {
  */
 function getClue() {
     var clue = document.querySelector(".clue:not(.logEntry)");
+    var clue_number = document.querySelector(".clueNumber");
+    var clue_next;
 
-    return clue ? clue.innerText : "";
+    if (clue) {
+        clue_next = clue.innerText + (clue_number ? " " + clue_number.innerText : "");
+
+        if (typeof clue_last === "string" && clue_last !== clue_next) {
+            main.runtime.sendMessage({
+                action: "notify",
+                clue: clue_next
+            });
+        }
+
+        clue_last = clue_next;
+
+        return clue.innerText;
+    }
+
+    return "";
 }
 
 /**
