@@ -1,5 +1,11 @@
 # Codenames Assistant
 
+## Installation
+
+### Mozilla
+
+https://addons.mozilla.org/en-GB/firefox/addon/codenames-assistant/
+
 ## Usage
 
 Nothing to setup or configure, just install the extension and play Codenames.
