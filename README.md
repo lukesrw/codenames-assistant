@@ -22,7 +22,7 @@ Codenames Assistant adds a notepad in the red team's sidebar.
 -   Button to update the notes with a list of cards (grouped by team)
 -   Button to automatically list word combinations, if there's a clue
 
-### "Define Button
+### "Define" Button
 
 Codenames Assistant also adds a "Define" button when a clue has been given.
 
