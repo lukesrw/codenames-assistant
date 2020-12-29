@@ -177,7 +177,7 @@ function getClue() {
     var clue_next;
 
     if (clue) {
-        clue_next = clue.innerText + (clue_number ? " " + clue_number.innerText : "");
+        clue_next = '"' + clue.innerText + '"' + (clue_number ? " " + clue_number.innerText : "");
 
         if (typeof clue_last === "string" && clue_last !== clue_next) {
             main.runtime.sendMessage({
