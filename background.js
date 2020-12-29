@@ -7,8 +7,8 @@ main.runtime.onMessage.addListener(request => {
         case "notify":
             main.notifications.create("ca-clue", {
                 iconUrl: main.runtime.getURL("img/logo-96.png"),
-                message: `Spymaster message: ${request.clue}`,
-                title: "New Clue Recieved",
+                message: request.clue,
+                title: "New Clue Received",
                 type: "basic"
             });
             break;
