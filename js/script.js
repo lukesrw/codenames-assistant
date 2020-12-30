@@ -226,25 +226,41 @@ function doCombinations() {
 
 /**
  *
- * @param {HTMLDivElement} container to append to
  * @param {string} text for button
  * @param {string} href for link
  * @returns {void}
  */
-function prependButton(container, text, href) {
+function makeButton(text, href) {
     var define_button;
     var define_button_container = document.createElement("div");
-
-    define_button_container.style.marginRight = "0.5rem";
-    container.insertBefore(define_button_container, container.firstChild);
 
     define_button = document.createElement("a");
     define_button.classList.add("jsx-198695588", "button");
     define_button.href = href;
     define_button.target = "_blank";
-    define_button.innerText = text;
+    define_button.innerText = text.substr(0, 1);
+    define_button.title = text;
     define_button.style.textDecoration = "none";
     define_button_container.appendChild(define_button);
+
+    return define_button_container;
+}
+
+/**
+ * @param {string} input for reference
+ * @returns {HTMLDivElement} new button
+ */
+function makeMerriamWebsterButton(input) {
+    return makeButton("Merriam Webster", "https://www.merriam-webster.com/dictionary/" + input.toLowerCase());
+}
+
+/**
+ *
+ * @param {string} input for reference
+ * @returns {HTMLDivElement} new button
+ */
+function makeWikipediaButton(input) {
+    return makeButton("Wikipedia", "https://en.wikipedia.org/wiki/" + input.toLowerCase());
 }
 
 /**
@@ -262,8 +278,13 @@ function getButton() {
     define_button = container.querySelector("a");
 
     if (!define_button) {
-        prependButton(container, "Merriam Webster", "https://www.merriam-webster.com/dictionary/" + clue);
-        prependButton(container, "Wikipedia", "https://en.wikipedia.org/wiki/" + clue);
+        define_button = makeMerriamWebsterButton(clue);
+        define_button.style.marginRight = "0.5rem";
+        container.insertBefore(define_button, container.firstChild);
+
+        define_button = makeWikipediaButton(clue);
+        define_button.style.marginRight = "0.5rem";
+        container.insertBefore(define_button, container.firstChild);
     }
 }
 
@@ -288,7 +309,48 @@ function doGroups() {
     });
 }
 
+/**
+ * @param {Event} event from browser
+ * @returns {void}
+ */
+function mouseAction(event) {
+    var target = event.target;
+    var buttons;
+    var button_i = 0;
+    while (!target.classList.contains("card")) {
+        target = target.parentElement;
+    }
+    buttons = target.querySelectorAll("a");
+
+    switch (event.type) {
+        case "mouseover":
+            if (buttons.length === 0) {
+                buttons = makeMerriamWebsterButton(target.querySelector(".word").innerText);
+                buttons.style.float = "left";
+                target.insertBefore(buttons, target.firstChild);
+
+                buttons = makeWikipediaButton(target.querySelector(".word").innerText);
+                buttons.style.float = "left";
+                target.insertBefore(buttons, target.firstChild);
+            }
+            break;
+
+        case "mouseleave":
+            for (button_i; button_i < buttons.length; button_i += 1) {
+                buttons[button_i].parentElement.parentElement.removeChild(buttons[button_i].parentElement);
+            }
+            break;
+    }
+}
+
 setTimeout(function () {
+    var cards = document.querySelectorAll(".card");
+    var card_i = 0;
+    for (card_i; card_i < cards.length; card_i += 1) {
+        cards[card_i].addEventListener("mouseover", mouseAction);
+        cards[card_i].addEventListener("mouseleave", mouseAction);
+    }
+
     document.querySelector(".creditsWrapper").style.bottom = "-4px";
 
     setInterval(function () {
