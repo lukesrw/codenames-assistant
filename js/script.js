@@ -6,6 +6,7 @@
 var ONE_SECOND_IN_MS = 1000;
 var main = browser || chrome;
 var clue_last = false;
+var listener;
 
 /**
  * @returns {object} card name to colour map
@@ -343,20 +344,25 @@ function mouseAction(event) {
     }
 }
 
-setTimeout(function () {
+document.body.addEventListener("mouseover", function () {
     var cards = document.querySelectorAll(".card");
     var card_i = 0;
-    for (card_i; card_i < cards.length; card_i += 1) {
-        cards[card_i].addEventListener("mouseover", mouseAction);
-        cards[card_i].addEventListener("mouseleave", mouseAction);
-    }
 
-    document.querySelector(".creditsWrapper").style.bottom = "-4px";
+    if (cards.length > 0) {
+        for (card_i; card_i < cards.length; card_i += 1) {
+            cards[card_i].addEventListener("mouseover", mouseAction);
+            cards[card_i].addEventListener("mouseleave", mouseAction);
+        }
 
-    setInterval(function () {
+        document.querySelector(".creditsWrapper").style.bottom = "-4px";
+
+        setInterval(function () {
+            getButton();
+        }, ONE_SECOND_IN_MS);
+
         getButton();
-    }, ONE_SECOND_IN_MS);
+        doGroups();
 
-    getButton();
-    doGroups();
-}, ONE_SECOND_IN_MS * 4);
+        document.body.removeEventListener("mouseover", this);
+    }
+});

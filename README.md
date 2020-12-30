@@ -10,8 +10,6 @@ https://addons.mozilla.org/en-GB/firefox/addon/codenames-assistant/
 
 Nothing to setup or configure, just install the extension and play Codenames.
 
-If you're already in a room, or just made one - you might need to refresh for the plugin to start.
-
 ## Features
 
 ### Notes Sidebar
