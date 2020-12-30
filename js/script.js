@@ -178,7 +178,7 @@ function getClue() {
     var clue_next;
 
     if (clue) {
-        clue_next = '"' + clue.innerText + '"' + (clue_number ? " " + clue_number.innerText : "");
+        clue_next = clue.innerText + (clue_number ? " " + clue_number.innerText : "");
 
         if (clue_last !== clue_next) {
             main.runtime.sendMessage({
@@ -260,7 +260,13 @@ function makeButton(text, href) {
  * @returns {HTMLDivElement} new button
  */
 function makeMerriamWebsterButton(input) {
-    return makeButton("Merriam Webster", "https://www.merriam-webster.com/dictionary/" + input.toLowerCase());
+    var button = makeButton("Merriam Webster", "https://www.merriam-webster.com/dictionary/" + input.toLowerCase());
+
+    button.style.marginRight = "0.5rem";
+    button.children[0].style.borderTopLeftRadius = "0";
+    button.children[0].style.borderBottomLeftRadius = "0";
+
+    return button;
 }
 
 /**
@@ -269,7 +275,12 @@ function makeMerriamWebsterButton(input) {
  * @returns {HTMLDivElement} new button
  */
 function makeWikipediaButton(input) {
-    return makeButton("Wikipedia", "https://en.wikipedia.org/wiki/" + input.toLowerCase());
+    var button = makeButton("Wikipedia", "https://en.wikipedia.org/wiki/" + input.toLowerCase());
+
+    button.children[0].style.borderTopRightRadius = "0";
+    button.children[0].style.borderBottomRightRadius = "0";
+
+    return button;
 }
 
 /**
@@ -287,13 +298,8 @@ function getButton() {
     define_button = container.querySelector("a");
 
     if (!define_button) {
-        define_button = makeMerriamWebsterButton(clue);
-        define_button.style.marginRight = "0.5rem";
-        container.insertBefore(define_button, container.firstChild);
-
-        define_button = makeWikipediaButton(clue);
-        define_button.style.marginRight = "0.5rem";
-        container.insertBefore(define_button, container.firstChild);
+        container.insertBefore(makeMerriamWebsterButton(clue), container.firstChild);
+        container.insertBefore(makeWikipediaButton(clue), container.firstChild);
     }
 }
 
