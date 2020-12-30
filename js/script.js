@@ -5,7 +5,8 @@
 var ONE_SECOND_IN_MS = 1000;
 var main = browser || chrome;
 var clue_last = false;
-var listener;
+var card_first_last = false;
+var do_once;
 
 /**
  * @returns {object} card name to colour map
@@ -247,6 +248,8 @@ function makeButton(text, href) {
     define_button.title = text;
     define_button.style.textDecoration = "none";
     define_button.style.zIndex = 1000;
+    define_button.style.padding = "0.4rem 0.4rem 0.3rem";
+    define_button.style.minWidth = "22.5px";
     define_button_container.appendChild(define_button);
 
     return define_button_container;
@@ -366,16 +369,15 @@ function addPeakListener(wrappers, target) {
     });
 }
 
-/**
- * @returns {void}
- */
-function prepare() {
+document.body.addEventListener("mouseover", function () {
     var cards = document.querySelectorAll(".card");
     var card_i = 0;
     var wrappers = document.querySelectorAll(".tokenWrapper");
     var wrapper_i = 0;
 
-    if (cards.length > 0) {
+    if (cards.length > 0 && card_first_last !== cards[0]) {
+        card_first_last = cards[0];
+
         for (card_i; card_i < cards.length; card_i += 1) {
             cards[card_i].addEventListener("mouseover", mouseAction);
             cards[card_i].addEventListener("mouseleave", mouseAction);
@@ -385,17 +387,17 @@ function prepare() {
             addPeakListener(wrappers, wrappers[wrapper_i]);
         }
 
-        document.querySelector(".creditsWrapper").style.bottom = "-4px";
+        if (!do_once) {
+            document.querySelector(".creditsWrapper").style.bottom = "-4px";
 
-        setInterval(function () {
+            setInterval(function () {
+                getButton();
+            }, ONE_SECOND_IN_MS);
+
             getButton();
-        }, ONE_SECOND_IN_MS);
+            doGroups();
 
-        getButton();
-        doGroups();
-
-        document.body.removeEventListener("mouseover", prepare);
+            do_once = true;
+        }
     }
-}
-
-document.body.addEventListener("mouseover", prepare);
+});
