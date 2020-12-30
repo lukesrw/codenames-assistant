@@ -1,5 +1,4 @@
 /*global browser chrome*/
-/* eslint-disable no-console */
 
 "use strict";
 
@@ -180,7 +179,7 @@ function getClue() {
     if (clue) {
         clue_next = '"' + clue.innerText + '"' + (clue_number ? " " + clue_number.innerText : "");
 
-        if (typeof clue_last === "string" && clue_last !== clue_next) {
+        if (clue_last !== clue_next) {
             main.runtime.sendMessage({
                 action: "notify",
                 clue: clue_next
@@ -247,6 +246,7 @@ function makeButton(text, href) {
         .join("");
     define_button.title = text;
     define_button.style.textDecoration = "none";
+    define_button.style.zIndex = 1000;
     define_button_container.appendChild(define_button);
 
     return define_button_container;
@@ -350,16 +350,39 @@ function mouseAction(event) {
 }
 
 /**
+ * @param {NodeList} wrappers list of card covers
+ * @param {HTMLDivElement} target of current item
+ * @returns {void}
+ */
+function addPeakListener(wrappers, target) {
+    target.addEventListener("click", function () {
+        var wrapper_j = 0;
+
+        for (wrapper_j; wrapper_j < wrappers.length; wrapper_j += 1) {
+            if (wrappers[wrapper_j] !== target && wrappers[wrapper_j].style.top !== "16px") {
+                wrappers[wrapper_j].classList.toggle("peak", !target.classList.contains("peak"));
+            }
+        }
+    });
+}
+
+/**
  * @returns {void}
  */
 function prepare() {
     var cards = document.querySelectorAll(".card");
     var card_i = 0;
+    var wrappers = document.querySelectorAll(".tokenWrapper");
+    var wrapper_i = 0;
 
     if (cards.length > 0) {
         for (card_i; card_i < cards.length; card_i += 1) {
             cards[card_i].addEventListener("mouseover", mouseAction);
             cards[card_i].addEventListener("mouseleave", mouseAction);
+        }
+
+        for (wrapper_i; wrapper_i < wrappers.length; wrapper_i += 1) {
+            addPeakListener(wrappers, wrappers[wrapper_i]);
         }
 
         document.querySelector(".creditsWrapper").style.bottom = "-4px";
