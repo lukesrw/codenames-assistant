@@ -225,12 +225,34 @@ function doCombinations() {
 }
 
 /**
- * @returns {HTMLAnchorElement} new/existing button
+ *
+ * @param {HTMLDivElement} container to append to
+ * @param {string} text for button
+ * @param {string} href for link
+ * @returns {void}
+ */
+function prependButton(container, text, href) {
+    var define_button;
+    var define_button_container = document.createElement("div");
+
+    define_button_container.style.marginRight = "0.5rem";
+    container.insertBefore(define_button_container, container.firstChild);
+
+    define_button = document.createElement("a");
+    define_button.classList.add("jsx-198695588", "button");
+    define_button.href = href;
+    define_button.target = "_blank";
+    define_button.innerText = text;
+    define_button.style.textDecoration = "none";
+    define_button_container.appendChild(define_button);
+}
+
+/**
+ * @returns {void}
  */
 function getButton() {
     var container = document.querySelector(".clueWrapper");
     var define_button;
-    var define_button_container;
     var clue = getClue().toLowerCase();
 
     if (!container) return false;
@@ -240,20 +262,9 @@ function getButton() {
     define_button = container.querySelector("a");
 
     if (!define_button) {
-        define_button_container = document.createElement("div");
-        define_button_container.style.marginRight = "0.5rem";
-        container.insertBefore(define_button_container, container.firstChild);
-
-        define_button = document.createElement("a");
-        define_button.classList.add("jsx-198695588", "button");
-        define_button.href = "https://www.merriam-webster.com/dictionary/" + clue;
-        define_button.target = "_blank";
-        define_button.innerText = "Define";
-        define_button_container.appendChild(define_button);
-        define_button.style.textDecoration = "none";
+        prependButton(container, "Merriam Webster", "https://www.merriam-webster.com/dictionary/" + clue);
+        prependButton(container, "Wikipedia", "https://en.wikipedia.org/wiki/" + clue);
     }
-
-    return define_button;
 }
 
 /**
