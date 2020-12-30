@@ -2,9 +2,13 @@
 
 ## Installation
 
-### Mozilla
+### Firefox
 
 https://addons.mozilla.org/en-GB/firefox/addon/codenames-assistant/
+
+### Chrome
+
+https://chrome.google.com/webstore/detail/codenames-assistant/caeoldohbmnkpkndeephoanbkhjccgbm
 
 ## Usage
 
