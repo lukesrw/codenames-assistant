@@ -349,7 +349,10 @@ function mouseAction(event) {
     }
 }
 
-document.body.addEventListener("mouseover", function () {
+/**
+ * @returns {void}
+ */
+function prepare() {
     var cards = document.querySelectorAll(".card");
     var card_i = 0;
 
@@ -368,6 +371,8 @@ document.body.addEventListener("mouseover", function () {
         getButton();
         doGroups();
 
-        document.body.removeEventListener("mouseover", this);
+        document.body.removeEventListener("mouseover", prepare);
     }
-});
+}
+
+document.body.addEventListener("mouseover", prepare);
