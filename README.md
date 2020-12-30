@@ -24,10 +24,10 @@ Codenames Assistant adds a notepad in the red team's sidebar.
 
 Codenames Assistant adds two buttons to each card, as well as when a clue has been given:
 
--   "Merriam Webster" Button  
+-   Merriam Webster (MW) Button  
      Opens a new tab to the Merriam Webster definition of the given clue/card.
 
--   "Wikipedia" Button  
+-   Wikipedia (W) Button  
      Opens a new tab to the Wikipedia page of the given clue/card.
 
 ### Clue Notifications

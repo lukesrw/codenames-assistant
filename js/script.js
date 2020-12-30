@@ -239,7 +239,12 @@ function makeButton(text, href) {
     define_button.classList.add("jsx-198695588", "button");
     define_button.href = href;
     define_button.target = "_blank";
-    define_button.innerText = text.substr(0, 1);
+    define_button.innerText = text
+        .split(" ")
+        .map(function (word) {
+            return word.substr(0, 1);
+        })
+        .join("");
     define_button.title = text;
     define_button.style.textDecoration = "none";
     define_button_container.appendChild(define_button);
