@@ -22,13 +22,22 @@ Codenames Assistant adds a notepad in the red team's sidebar.
 -   Button to update the notes with a list of cards (grouped by team)
 -   Button to automatically list word combinations, if there's a clue
 
-### "Define" Button
+### Clue Buttons
 
-Codenames Assistant also adds a "Define" button when a clue has been given.
+Codenames Assistant adds two buttons when a clue has been given:
 
-This currently opens a new tab with the Merriam Webster definition of the clue.
+-   "Merriam Webster" Button  
+     Opens a new tab to the Merriam Webster definition of the given clue.
+
+-   "Wikipedia" Button  
+     Opens a new tab to the Wikipedia page of the given clue.
+
+### Clue Notifications
+
+Codenames Assistant sends a browser notification when a new clue has been given.
+
+You don't need to keep checking the Codenames tab to see when there's a clue.
 
 ## Todo
 
--   "Wikipedia" button, for things that aren't in the dictionary (issue #1)
--   "Define" button for each card on the board, just in case (issue #2)
+-   "Merriam Webster" button for each card on the board, just in case (issue #2)
