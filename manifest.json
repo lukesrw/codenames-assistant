@@ -29,5 +29,5 @@
     "manifest_version": 2,
     "name": "Codenames Assistant",
     "permissions": ["notifications"],
-    "version": "1.1"
+    "version": "1.2"
 }
