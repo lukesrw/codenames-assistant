@@ -3,10 +3,14 @@
 "use strict";
 
 var ONE_SECOND_IN_MS = 1000;
+var ONE_MINUTE_IN_SECONDS = 60;
+
 var main = browser || chrome;
 var clue_last = false;
+var clue_last_time = false;
 var card_first_last = false;
 var do_once;
+var timer_interval;
 
 /**
  * @returns {object} card name to colour map
@@ -170,6 +174,47 @@ function upperCase(input) {
 }
 
 /**
+ * @returns {void}
+ */
+function updateTimer() {
+    var wrapper = document.querySelector(".instructionWrapper");
+    var time = document.querySelector(".timer-value").value;
+    var minutes;
+    var seconds;
+    var timer;
+
+    if (wrapper && time > 0) {
+        console.log("need timer for time: ", time);
+
+        timer = wrapper.querySelector(".timer");
+
+        // total time
+        time -= new Date().getTime() - clue_last;
+        if (time < 0) {
+            time = 0;
+        }
+
+        // minutes
+        minutes = Math.floor(time / ONE_MINUTE_IN_SECONDS);
+
+        // seconds
+        seconds = minutes * ONE_SECOND_IN_MS;
+        seconds = time - seconds;
+
+        if (!timer) {
+            console.log("making timer inside", wrapper);
+
+            timer = document.createElement("div");
+            timer.classList.push("jsx-1662653579", "instruction", "timer");
+            timer.style.marginLeft = "1rem";
+            wrapper.appendChild(timer);
+        }
+
+        timer.innerText = minutes + " Minutes, " + seconds + " Seconds";
+    }
+}
+
+/**
  * @returns {string} given clue
  */
 function getClue() {
@@ -181,13 +226,16 @@ function getClue() {
         clue_next = clue.innerText + (clue_number ? " " + clue_number.innerText : "");
 
         if (clue_last !== clue_next) {
+            clue_last = clue_next;
+            clue_last_time = new Date().getTime();
+
             main.runtime.sendMessage({
                 action: "notify",
                 clue: clue_next
             });
         }
 
-        clue_last = clue_next;
+        updateTimer();
 
         return clue.innerText;
     }
@@ -380,6 +428,10 @@ document.body.addEventListener("mouseover", function () {
     var card_i = 0;
     var wrappers = document.querySelectorAll(".tokenWrapper");
     var wrapper_i = 0;
+    var left_container = document.querySelector(".left");
+    var timer_container;
+    var timer;
+    var gap;
 
     if (cards.length > 0 && card_first_last !== cards[0]) {
         card_first_last = cards[0];
@@ -395,6 +447,33 @@ document.body.addEventListener("mouseover", function () {
 
         if (!do_once) {
             document.querySelector(".creditsWrapper").style.bottom = "-4px";
+
+            timer_container = document.createElement("div");
+            left_container.appendChild(timer_container);
+
+            gap = document.createElement("div");
+            gap.classList.add("gap", "jsx-401347710");
+            left_container.appendChild(gap);
+
+            timer = document.createElement("input");
+            timer.classList.add("timer-value");
+            timer.placeholder = "Timer (Seconds)";
+            timer.type = "number";
+            timer.min = "0";
+
+            // match style of #clip-input from "Players" modal
+            timer.style.fontSize = "1rem";
+            timer.style.padding = "0.5rem";
+            timer.style.borderRadius = "1rem";
+            timer.style.border = "1px solid rgb(160, 160, 160)";
+            timer.style.boxShadow = "rgb(192, 192, 192) 2px 2px 0px 0px inset";
+            timer.style.textAlign = "center";
+            timer.style.margin = "0.2rem";
+            timer.style.outline = "none";
+
+            timer_container.appendChild(timer);
+
+            // <div class="jsx-3445529935 formfield" data-children-count="1"><label for="nickname-input" class="jsx-3445529935">Nickname</label><input id="nickname-input" placeholder="Enter your nickname" type="text" class="jsx-3445529935" value="Luke" data-kwimpalastatus="alive" data-kwimpalaid="1609434821421-1"></div>
 
             setInterval(function () {
                 getButton();
