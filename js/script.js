@@ -189,7 +189,14 @@ function getClue() {
 
         clue_last = clue_next;
 
-        return clue.innerText;
+        clue = clue.innerText.trim().split(" ");
+        if (clue.length > 1) {
+            clue = clue.filter(function (part) {
+                return isNaN(parseFloat(part));
+            });
+        }
+
+        return clue.join(" ");
     }
 
     return "";
