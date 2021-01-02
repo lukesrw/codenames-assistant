@@ -142,6 +142,7 @@ function getNotes() {
         notes_heading_title.appendChild(notes_heading_combinations);
 
         notes_container = document.createElement("textarea");
+        notes_container.spellcheck = false;
         notes_container.classList.add("flex-auto", "scroll");
         notes_container.style.margin = "0.5rem";
         notes_container.style.border = "0";
@@ -315,6 +316,7 @@ function getButton() {
  */
 function doGroups() {
     var cards = getCards();
+    var card_to_colour = cardToColour();
     var notes = getNotes();
 
     // reset notes
@@ -326,7 +328,15 @@ function doGroups() {
         notes.value += upperCase(group.name) + ":";
 
         group.cards.forEach(function (card) {
-            notes.value += "\n    - " + upperCase(card.querySelector(".word").innerText);
+            var word = card.querySelector(".word").innerText;
+
+            notes.value += "\n    - " + upperCase(word);
+            if (
+                cards[cards.length - 1].name !== "unknown" &&
+                Object.prototype.hasOwnProperty.call(card_to_colour, word)
+            ) {
+                notes.value += " ✔️";
+            }
         });
     });
 }
