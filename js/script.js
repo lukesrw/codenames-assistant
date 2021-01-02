@@ -24,7 +24,7 @@ function cardToColour() {
         } else if (cards[card_i].classList.contains("card-blue")) {
             card_to_colour[word] = "blue";
         } else {
-            card_to_colour[word] = "gray";
+            card_to_colour[word] = "neutral";
         }
     }
 
@@ -46,7 +46,7 @@ function getTeam() {
 function getOrder() {
     var team = getTeam();
 
-    return ["black", team, team === "red" ? "blue" : "red", "gray"];
+    return ["black", team, team === "red" ? "blue" : "red", "neutral", "unknown"];
 }
 
 /**
@@ -62,7 +62,7 @@ function getCards() {
     var text;
 
     for (card_i; card_i < cards.length; card_i += 1) {
-        group = cards[card_i].classList[2] || "gray";
+        group = cards[card_i].classList[2] || "unknown";
         text = cards[card_i].querySelector(".word").innerText;
         if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
             group = text_to_colour[text];
@@ -214,7 +214,7 @@ function doCombinations() {
         notes.value = "";
 
         cards.some(function (group) {
-            if (group.name === "gray") {
+            if (group.name === "neutral") {
                 group.cards.forEach(function (card) {
                     var word = upperCase(card.querySelector(".word").innerText);
 
