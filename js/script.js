@@ -215,7 +215,7 @@ function doCombinations() {
         notes.value = "";
 
         cards.some(function (group) {
-            if (group.name === "neutral") {
+            if (group.name === "unknown") {
                 group.cards.forEach(function (card) {
                     var word = upperCase(card.querySelector(".word").innerText);
 
