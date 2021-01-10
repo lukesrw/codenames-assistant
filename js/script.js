@@ -138,64 +138,128 @@ function getCards() {
  * @returns {HTMLDivElement} new/existing notes container
  */
 function getNotes() {
-    var sidebar_red = document.getElementById("teamBoard-red");
-    var notes = sidebar_red.nextElementSibling;
+    var sidebar_red = document.querySelectorAll(
+        "#teamBoard-red, #match_overview_area"
+    );
+    var notes = sidebar_red[0].nextElementSibling;
     var notes_heading;
     var notes_heading_title;
     var notes_heading_text;
+    var notes_header_elements;
     var notes_heading_groups;
     var notes_heading_combinations;
     var notes_container;
+    var action_icon;
 
     if (!notes) {
         notes = document.createElement("div");
-        notes.classList.add("logBoardWrapper");
+        notes.classList.add("logBoardWrapper", "card");
 
         // change which corners are rounded
-        notes.style.borderTopLeftRadius = "0";
-        notes.style.borderBottomLeftRadius = "0";
-        notes.style.borderTopRightRadius = "1rem";
-        notes.style.borderBottomRightRadius = "1rem";
-        sidebar_red.parentElement.appendChild(notes);
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes.style.borderTopLeftRadius = "0";
+            notes.style.borderBottomLeftRadius = "0";
+            notes.style.borderTopRightRadius = "1rem";
+            notes.style.borderBottomRightRadius = "1rem";
+        }
+        sidebar_red[0].parentElement.appendChild(notes);
 
         notes_heading = document.createElement("section");
-        notes_heading.classList.add("flex-none");
+        notes_heading.classList.add(
+            "flex-none",
+            "card-header",
+            "bg-light",
+            "header-elements-inline"
+        );
+
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes_heading.style.padding = "0.5rem 0";
+            notes_heading.style.textAlign = "center";
+        }
+
         notes.appendChild(notes_heading);
 
         notes_heading_title = document.createElement("p");
-        notes_heading_title.classList.add("title");
-        notes_heading.appendChild(notes_heading_title);
+        notes_heading_title.classList.add("title", "mb-0");
+        // notes_heading.appendChild(notes_heading_title);
 
-        notes_heading_text = document.createElement("span");
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes_heading_text = document.createElement("span");
+        } else {
+            notes_heading_text = document.createElement("h6");
+        }
+        notes_heading_text.classList.add("card-title");
         notes_heading_text.innerHTML = "Notes";
-        notes_heading_title.appendChild(notes_heading_text);
+        notes_heading.appendChild(notes_heading_text);
+
+        notes_header_elements = document.createElement("span");
+        notes_header_elements.classList.add("header-elements");
+        notes_heading.appendChild(notes_header_elements);
 
         notes_heading_groups = document.createElement("a");
         notes_heading_groups.style.marginLeft = "0.5ch";
-        notes_heading_groups.classList.add("title");
-        notes_heading_groups.innerText = "(group)";
+        notes_heading_groups.style.padding = "0";
+        notes_heading_groups.classList.add("title", "list-icons-item", "mr-3");
+        notes_heading_groups.innerText = "Group";
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes_heading_groups.innerText =
+                "(" + notes_heading_groups.innerText.toLowerCase() + ")";
+        } else {
+            action_icon = document.createElement("i");
+            action_icon.classList.add("icon-users", "mr-2");
+            notes_heading_groups.insertBefore(
+                action_icon,
+                notes_heading_groups.firstChild
+            );
+        }
         notes_heading_groups.href = "javascript:void 0";
         // eslint-disable-next-line no-use-before-define
-        notes_heading_groups.onclick = doGroups;
-        notes_heading_title.appendChild(notes_heading_groups);
+        if (typeof doGroups === "function") {
+            // eslint-disable-next-line no-use-before-define
+            notes_heading_groups.onclick = doGroups;
+        }
+        notes_header_elements.appendChild(notes_heading_groups);
 
         notes_heading_combinations = document.createElement("a");
         notes_heading_combinations.style.marginLeft = "0.5ch";
-        notes_heading_combinations.classList.add("title");
-        notes_heading_combinations.innerText = "(combinations)";
+        notes_heading_combinations.style.padding = "0";
+        notes_heading_combinations.classList.add("title", "list-icons-item");
+        notes_heading_combinations.innerText = "Combinations";
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes_heading_combinations.innerText =
+                "(" + notes_heading_combinations.innerText.toLowerCase() + ")";
+        } else {
+            action_icon = document.createElement("i");
+            action_icon.classList.add("icon-text-width", "mr-2");
+            notes_heading_combinations.insertBefore(
+                action_icon,
+                notes_heading_combinations.firstChild
+            );
+        }
         notes_heading_combinations.href = "javascript:void 0";
         // eslint-disable-next-line no-use-before-define
-        notes_heading_combinations.onclick = doCombinations;
-        notes_heading_title.appendChild(notes_heading_combinations);
+        if (typeof doCombinations === "function") {
+            // eslint-disable-next-line no-use-before-define
+            notes_heading_combinations.onclick = doCombinations;
+        }
+        notes_header_elements.appendChild(notes_heading_combinations);
 
         notes_container = document.createElement("textarea");
         notes_container.spellcheck = false;
         notes_container.classList.add("flex-auto", "scroll");
-        notes_container.style.margin = "0.5rem";
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes_container.style.padding = "0.5rem";
+        } else {
+            notes_container.style.padding = ".5rem 1.25rem";
+            notes_container.style.minHeight = "185px";
+        }
         notes_container.style.border = "0";
         notes_container.style.font = "inherit";
         notes_container.style.fontSize = "0.75rem";
-        notes_container.style.resize = "none";
+        notes_container.style.outline = "none";
+        if (sidebar_red[0].id === "teamBoard-red") {
+            notes_container.style.resize = "none";
+        }
         notes.appendChild(notes_container);
     }
 
