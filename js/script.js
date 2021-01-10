@@ -3,21 +3,23 @@
 "use strict";
 
 var ONE_SECOND_IN_MS = 1000;
-var main;
-var clue_last = false;
-var card_first_last = false;
-var do_once;
-var is_asterix = window.location.hostname === "spy.asterix.gg";
-var color_regex = new RegExp(
+var NOT_CLUES = ["Game completed"];
+var IS_ASTERIX = window.location.hostname === "spy.asterix.gg";
+var REGEX_COLOR = new RegExp(
     "(?:card-|text-|bg-|default/)(?<color>[a-z]+)",
     "ui"
 );
-var team_regex = new RegExp("(?:alpha|bg)-(?<color>[a-z]+)", "ui");
-var class_to_color = {
+var REGEX_TEAM = new RegExp("(?:alpha|bg)-(?<color>[a-z]+)", "ui");
+var CLASS_TO_COLOR = {
     danger: "red",
     primary: "blue",
     success: "green"
 };
+
+var main;
+var clue_last = false;
+var card_first_last = false;
+var do_once;
 
 if (typeof browser !== "undefined") {
     main = browser;
@@ -41,11 +43,11 @@ function cardToColour() {
         word = cards[card_i].querySelector("em:last-child, strong");
         if (word) {
             word = word.innerText;
-            color = color_regex.exec(cards[card_i].className);
+            color = REGEX_COLOR.exec(cards[card_i].className);
 
             if (color) {
                 color = color.groups.color;
-                color = class_to_color[color] || color;
+                color = CLASS_TO_COLOR[color] || color;
                 card_to_colour[word] = color;
             }
         }
@@ -72,13 +74,17 @@ function getTeam() {
 
     for (team_i = 0; team_i < teams.length; team_i += 1) {
         clone = teams[team_i].cloneNode(true);
-        if (clone.children[0].classList.contains("alert")) {
-            clone.removeChild(clone.children[0]);
+
+        if (clone.children.length > 0) {
+            if (clone.children[0].classList.contains("alert")) {
+                clone.removeChild(clone.children[0]);
+            }
         }
+
         clone = clone.innerText.replace(" [CAPTAIN]", "").split(", ");
 
         if (clone.indexOf(team) > -1) {
-            clone = team_regex.exec(
+            clone = REGEX_TEAM.exec(
                 teams[team_i].parentElement.previousElementSibling.className
             );
 
@@ -87,7 +93,7 @@ function getTeam() {
         }
     }
 
-    return class_to_color[team] || team;
+    return CLASS_TO_COLOR[team] || team;
 }
 
 /**
@@ -97,7 +103,7 @@ function getOrder() {
     var team = getTeam();
     var order = ["black", team];
 
-    Object.values(class_to_color).forEach(function (color) {
+    Object.values(CLASS_TO_COLOR).forEach(function (color) {
         if (order.indexOf(color) === -1) {
             order.push(color);
         }
@@ -122,7 +128,7 @@ function getCards() {
     for (card_i; card_i < cards.length; card_i += 1) {
         if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
             group = text_to_colour[text];
-        } else if (is_asterix) {
+        } else if (IS_ASTERIX) {
             if (cards[card_i].children[index].tagName === "A") {
                 index = 1;
             }
@@ -138,8 +144,12 @@ function getCards() {
                 group = cards[card_i].children[index].style.backgroundImage;
             }
 
-            group = color_regex.exec(group);
-            group = group ? group.groups.color : "neutral"; // not sure about this
+            group = REGEX_COLOR.exec(group);
+            if (!group || (group && group.groups.color === "neutral")) {
+                group = "unknown";
+            } else {
+                group = group.groups.color;
+            }
             text = cards[card_i].querySelector(".word, center").innerText;
         } else {
             group = cards[card_i].classList[2] || "unknown";
@@ -184,7 +194,7 @@ function getNotes() {
         notes = document.createElement("div");
         notes.classList.add("logBoardWrapper", "card");
 
-        if (!is_asterix) {
+        if (!IS_ASTERIX) {
             // change which corners are rounded
             notes.style.borderTopLeftRadius = "0";
             notes.style.borderBottomLeftRadius = "0";
@@ -201,14 +211,14 @@ function getNotes() {
             "header-elements-inline"
         );
 
-        if (!is_asterix) {
+        if (!IS_ASTERIX) {
             notes_heading.style.padding = "0.5rem 0";
             notes_heading.style.textAlign = "center";
         }
 
         notes.appendChild(notes_heading);
 
-        if (is_asterix) {
+        if (IS_ASTERIX) {
             notes_heading_text = document.createElement("h6");
         } else {
             notes_heading_text = document.createElement("span");
@@ -226,7 +236,7 @@ function getNotes() {
         notes_heading_groups.style.padding = "0";
         notes_heading_groups.classList.add("title", "list-icons-item", "mr-3");
         notes_heading_groups.innerText = "Group";
-        if (is_asterix) {
+        if (IS_ASTERIX) {
             action_icon = document.createElement("i");
             action_icon.classList.add("icon-users", "mr-2");
             notes_heading_groups.insertBefore(
@@ -250,7 +260,7 @@ function getNotes() {
         notes_heading_combinations.style.padding = "0";
         notes_heading_combinations.classList.add("title", "list-icons-item");
         notes_heading_combinations.innerText = "Combinations";
-        if (is_asterix) {
+        if (IS_ASTERIX) {
             action_icon = document.createElement("i");
             action_icon.classList.add("icon-text-width", "mr-2");
             notes_heading_combinations.insertBefore(
@@ -272,7 +282,7 @@ function getNotes() {
         notes_container = document.createElement("textarea");
         notes_container.spellcheck = false;
         notes_container.classList.add("flex-auto", "scroll");
-        if (is_asterix) {
+        if (IS_ASTERIX) {
             notes_container.style.padding = ".5rem 1.25rem";
             notes_container.style.minHeight = "185px";
         } else {
@@ -321,7 +331,7 @@ function getClue() {
             clue.innerText + (clue_number ? " " + clue_number.innerText : "");
         clue_next = clue_next.replace(/\s{1,}/gu, " ");
 
-        if (clue_last !== clue_next) {
+        if (clue_last !== clue_next && typeof main !== "undefined") {
             main.runtime.sendMessage({
                 action: "notify",
                 clue: clue_next
@@ -330,14 +340,18 @@ function getClue() {
 
         clue_last = clue_next;
 
-        clue = clue.innerText.trim().split(" ");
+        clue = clue.innerText.trim().split(/\s/);
         if (clue.length > 1) {
             clue = clue.filter(function (part) {
-                return isNaN(parseFloat(part));
+                return part.length && isNaN(parseFloat(part));
             });
         }
 
-        return clue.join(" ");
+        clue = clue.join(" ");
+
+        if (NOT_CLUES.indexOf(clue) > -1) {
+            return clue;
+        }
     }
 
     return "";
@@ -350,6 +364,7 @@ function doCombinations() {
     var notes = getNotes();
     var clue = upperCase(getClue());
     var cards = getCards();
+    var is_first = true;
 
     if (clue.length > 0) {
         notes.value = "";
@@ -361,11 +376,15 @@ function doCombinations() {
                         card.querySelector(".word, center").innerText
                     );
 
+                    if (!is_first) {
+                        notes.value += "\n";
+                    }
                     notes.value += word + "\n";
                     notes.value += "    - " + word + " " + clue + "\n";
                     notes.value += "    - " + clue + " " + word + "\n";
-                    notes.value += "\n";
                 });
+
+                is_first = false;
 
                 return true;
             }
