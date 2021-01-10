@@ -124,24 +124,33 @@ function getCards() {
             if (cards[card_i].children[index].tagName === "A") {
                 index = 1;
             }
-            group = color_regex.exec(
-                cards[card_i].children[index].children[0].style.backgroundImage
-            );
-        } else {
-            group = color_regex.exec(cards[card_i].className);
-        }
 
-        group = group ? group.groups.color : "neutral"; // not sure about this
-        text = cards[card_i].querySelectorAll(".word, center")[0].innerText;
-        if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
-            group = text_to_colour[text];
-        }
+            if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
+                group = text_to_colour[text];
+            } else {
+                if (
+                    cards[card_i].children[index].children[0].style
+                        .backgroundImage.length > 0
+                ) {
+                    group =
+                        cards[card_i].children[index].children[0].style
+                            .backgroundImage;
+                } else {
+                    group = cards[card_i].children[index].style.backgroundImage;
+                }
 
-        if (!Object.prototype.hasOwnProperty.call(groups, group)) {
-            groups[group] = [];
-        }
+                group = color_regex.exec(group);
+                group = group ? group.groups.color : "neutral"; // not sure about this
+                text = cards[card_i].querySelectorAll(".word, center")[0]
+                    .innerText;
+            }
 
-        groups[group].push(cards[card_i]);
+            if (!Object.prototype.hasOwnProperty.call(groups, group)) {
+                groups[group] = [];
+            }
+
+            groups[group].push(cards[card_i]);
+        }
     }
 
     getOrder().forEach(function (group) {
