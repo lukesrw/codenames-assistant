@@ -120,36 +120,36 @@ function getCards() {
     var index = 0;
 
     for (card_i; card_i < cards.length; card_i += 1) {
-        if (is_asterix) {
+        if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
+            group = text_to_colour[text];
+        } else if (is_asterix) {
             if (cards[card_i].children[index].tagName === "A") {
                 index = 1;
             }
 
-            if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
-                group = text_to_colour[text];
-            } else {
-                if (
+            if (
+                cards[card_i].children[index].children[0].style.backgroundImage
+                    .length > 0
+            ) {
+                group =
                     cards[card_i].children[index].children[0].style
-                        .backgroundImage.length > 0
-                ) {
-                    group =
-                        cards[card_i].children[index].children[0].style
-                            .backgroundImage;
-                } else {
-                    group = cards[card_i].children[index].style.backgroundImage;
-                }
-
-                group = color_regex.exec(group);
-                group = group ? group.groups.color : "neutral"; // not sure about this
-                text = cards[card_i].querySelector(".word, center").innerText;
+                        .backgroundImage;
+            } else {
+                group = cards[card_i].children[index].style.backgroundImage;
             }
 
-            if (!Object.prototype.hasOwnProperty.call(groups, group)) {
-                groups[group] = [];
-            }
-
-            groups[group].push(cards[card_i]);
+            group = color_regex.exec(group);
+            group = group ? group.groups.color : "neutral"; // not sure about this
+            text = cards[card_i].querySelector(".word, center").innerText;
+        } else {
+            group = cards[card_i].classList[2] || "unknown";
         }
+
+        if (!Object.prototype.hasOwnProperty.call(groups, group)) {
+            groups[group] = [];
+        }
+
+        groups[group].push(cards[card_i]);
     }
 
     getOrder().forEach(function (group) {
