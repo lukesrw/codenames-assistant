@@ -379,7 +379,7 @@ function makeButton(text, href) {
         "jsx-198695588",
         "button",
         "btn",
-        "btn-primary"
+        "btn-secondary"
     );
     define_button.href = href;
     define_button.target = "_blank";
