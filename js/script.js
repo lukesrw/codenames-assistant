@@ -3,11 +3,15 @@
 "use strict";
 
 var ONE_SECOND_IN_MS = 1000;
-var main = browser || chrome;
+// var main = browser || chrome;
 var clue_last = false;
 var card_first_last = false;
 var do_once;
-var class_regex = new RegExp("(?:card|alpha|bg)-(?<color>\\w+)", "ui");
+var is_asterix = window.location.hostname === "spy.asterix.gg";
+var color_regex = new RegExp(
+    "(?:card-|text-|bg-|default/)(?<color>[a-z]+)",
+    "ui"
+);
 var class_to_color = {
     danger: "red",
     primary: "blue",
@@ -20,7 +24,7 @@ var class_to_color = {
 function cardToColour() {
     var card_to_colour = {};
     var cards = document.querySelectorAll(
-        '#logBoard .logEntry, #overview_gamelog_id [class^="alpha-"]'
+        '#logBoard .logEntry, #overview_gamelog_id [class^="text-"]'
     );
     var card_i = 0;
     var word;
@@ -30,7 +34,7 @@ function cardToColour() {
         word = cards[card_i].querySelector("em:last-child, strong");
         if (word) {
             word = word.innerText;
-            color = class_regex.exec(cards[card_i].className);
+            color = color_regex.exec(cards[card_i].className);
 
             if (color) {
                 color = color.groups.color;
@@ -50,7 +54,6 @@ function getTeam() {
     var teams;
     var team_i;
     var clone;
-    var class_regex;
 
     // for codenames.game
     var team = document.querySelector(".button[color]");
@@ -68,7 +71,7 @@ function getTeam() {
         clone = clone.innerText.replace(" [CAPTAIN]", "").split(", ");
 
         if (clone.indexOf(team) > -1) {
-            clone = class_regex.exec(
+            clone = color_regex.exec(
                 teams[team_i].parentElement.previousElementSibling.className
             );
 
@@ -103,14 +106,21 @@ function getCards() {
     var order = [];
     var groups = {};
     var group;
-    var cards = document.querySelectorAll(".card");
+    var cards = document.querySelectorAll(
+        '.field .card, [id^="cardtileinner_"]'
+    );
     var card_i = 0;
     var text_to_colour = cardToColour();
     var text;
 
     for (card_i; card_i < cards.length; card_i += 1) {
-        group = cards[card_i].classList[2] || "unknown";
-        text = cards[card_i].querySelector(".word").innerText;
+        if (is_asterix) {
+            group = color_regex.exec(cards[card_i].style.backgroundImage);
+        } else {
+            group = color_regex.exec(cards[card_i].className);
+        }
+        group = group.groups.color;
+        text = cards[card_i].querySelectorAll(".word, center")[0].innerText;
         if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
             group = text_to_colour[text];
         }
@@ -156,7 +166,7 @@ function getNotes() {
         notes.classList.add("logBoardWrapper", "card");
 
         // change which corners are rounded
-        if (sidebar_red[0].id === "teamBoard-red") {
+        if (!is_asterix) {
             notes.style.borderTopLeftRadius = "0";
             notes.style.borderBottomLeftRadius = "0";
             notes.style.borderTopRightRadius = "1rem";
@@ -172,7 +182,7 @@ function getNotes() {
             "header-elements-inline"
         );
 
-        if (sidebar_red[0].id === "teamBoard-red") {
+        if (!is_asterix) {
             notes_heading.style.padding = "0.5rem 0";
             notes_heading.style.textAlign = "center";
         }
@@ -183,10 +193,10 @@ function getNotes() {
         notes_heading_title.classList.add("title", "mb-0");
         // notes_heading.appendChild(notes_heading_title);
 
-        if (sidebar_red[0].id === "teamBoard-red") {
-            notes_heading_text = document.createElement("span");
-        } else {
+        if (is_asterix) {
             notes_heading_text = document.createElement("h6");
+        } else {
+            notes_heading_text = document.createElement("span");
         }
         notes_heading_text.classList.add("card-title");
         notes_heading_text.innerHTML = "Notes";
@@ -201,16 +211,16 @@ function getNotes() {
         notes_heading_groups.style.padding = "0";
         notes_heading_groups.classList.add("title", "list-icons-item", "mr-3");
         notes_heading_groups.innerText = "Group";
-        if (sidebar_red[0].id === "teamBoard-red") {
-            notes_heading_groups.innerText =
-                "(" + notes_heading_groups.innerText.toLowerCase() + ")";
-        } else {
+        if (is_asterix) {
             action_icon = document.createElement("i");
             action_icon.classList.add("icon-users", "mr-2");
             notes_heading_groups.insertBefore(
                 action_icon,
                 notes_heading_groups.firstChild
             );
+        } else {
+            notes_heading_groups.innerText =
+                "(" + notes_heading_groups.innerText.toLowerCase() + ")";
         }
         notes_heading_groups.href = "javascript:void 0";
         // eslint-disable-next-line no-use-before-define
@@ -225,16 +235,16 @@ function getNotes() {
         notes_heading_combinations.style.padding = "0";
         notes_heading_combinations.classList.add("title", "list-icons-item");
         notes_heading_combinations.innerText = "Combinations";
-        if (sidebar_red[0].id === "teamBoard-red") {
-            notes_heading_combinations.innerText =
-                "(" + notes_heading_combinations.innerText.toLowerCase() + ")";
-        } else {
+        if (is_asterix) {
             action_icon = document.createElement("i");
             action_icon.classList.add("icon-text-width", "mr-2");
             notes_heading_combinations.insertBefore(
                 action_icon,
                 notes_heading_combinations.firstChild
             );
+        } else {
+            notes_heading_combinations.innerText =
+                "(" + notes_heading_combinations.innerText.toLowerCase() + ")";
         }
         notes_heading_combinations.href = "javascript:void 0";
         // eslint-disable-next-line no-use-before-define
@@ -247,11 +257,11 @@ function getNotes() {
         notes_container = document.createElement("textarea");
         notes_container.spellcheck = false;
         notes_container.classList.add("flex-auto", "scroll");
-        if (sidebar_red[0].id === "teamBoard-red") {
-            notes_container.style.padding = "0.5rem";
-        } else {
+        if (is_asterix) {
             notes_container.style.padding = ".5rem 1.25rem";
             notes_container.style.minHeight = "185px";
+        } else {
+            notes_container.style.padding = "0.5rem";
         }
         notes_container.style.border = "0";
         notes_container.style.font = "inherit";
@@ -329,7 +339,9 @@ function doCombinations() {
         cards.some(function (group) {
             if (group.name === "unknown") {
                 group.cards.forEach(function (card) {
-                    var word = upperCase(card.querySelector(".word").innerText);
+                    var word = upperCase(
+                        card.querySelectorAll(".word, center")[0].innerText
+                    );
 
                     notes.value += word + "\n";
                     notes.value += "    - " + word + " " + clue + "\n";
@@ -449,7 +461,7 @@ function doGroups() {
         notes.value += upperCase(group.name) + ":";
 
         group.cards.forEach(function (card) {
-            var word = card.querySelector(".word").innerText;
+            var word = card.querySelectorAll(".word, center")[0].innerText;
 
             notes.value += "\n    - " + upperCase(word);
             if (
@@ -479,13 +491,13 @@ function mouseAction(event) {
         case "mouseover":
             if (buttons.length === 0) {
                 buttons = makeMerriamWebsterButton(
-                    target.querySelector(".word").innerText
+                    target.querySelectorAll(".word, center")[0].innerText
                 );
                 buttons.style.float = "left";
                 target.insertBefore(buttons, target.firstChild);
 
                 buttons = makeWikipediaButton(
-                    target.querySelector(".word").innerText
+                    target.querySelectorAll(".word, center")[0].innerText
                 );
                 buttons.style.float = "left";
                 target.insertBefore(buttons, target.firstChild);
@@ -526,25 +538,30 @@ function addPeakListener(wrappers, target) {
 }
 
 document.body.addEventListener("mouseover", function () {
-    var cards = document.querySelectorAll(".card");
-    var card_i = 0;
+    var cards = getCards();
+    var credits;
+    // var card_i = 0;
     var wrappers = document.querySelectorAll(".tokenWrapper");
     var wrapper_i = 0;
 
-    if (cards.length > 0 && card_first_last !== cards[0]) {
-        card_first_last = cards[0];
+    if (cards) {
+        card_first_last = cards[0].cards[0];
 
-        for (card_i; card_i < cards.length; card_i += 1) {
-            cards[card_i].addEventListener("mouseover", mouseAction);
-            cards[card_i].addEventListener("mouseleave", mouseAction);
-        }
+        Object.keys(cards).forEach(function (group) {
+            cards[group].cards.forEach(function (card) {
+                card.addEventListener("mouseover", mouseAction);
+                card.addEventListener("mouseleave", mouseAction);
+            });
+        });
 
         for (wrapper_i; wrapper_i < wrappers.length; wrapper_i += 1) {
             addPeakListener(wrappers, wrappers[wrapper_i]);
         }
 
         if (!do_once) {
-            document.querySelector(".creditsWrapper").style.bottom = "-4px";
+            credits = document.querySelector(".creditsWrapper");
+
+            if (credits) credits.style.bottom = "-4px";
 
             setInterval(function () {
                 getButton();
