@@ -3,7 +3,7 @@
 "use strict";
 
 var ONE_SECOND_IN_MS = 1000;
-var main = browser || chrome;
+var main;
 var clue_last = false;
 var card_first_last = false;
 var do_once;
@@ -12,11 +12,18 @@ var color_regex = new RegExp(
     "(?:card-|text-|bg-|default/)(?<color>[a-z]+)",
     "ui"
 );
+var alpha_regex = new RegExp("alpha-(?<color>[a-z]+)", "ui");
 var class_to_color = {
     danger: "red",
     primary: "blue",
     success: "green"
 };
+
+if (typeof browser !== "undefined") {
+    main = browser;
+} else if (typeof chrome !== "undefined") {
+    main = chrome;
+}
 
 /**
  * @returns {object} card name to colour map
@@ -71,7 +78,7 @@ function getTeam() {
         clone = clone.innerText.replace(" [CAPTAIN]", "").split(", ");
 
         if (clone.indexOf(team) > -1) {
-            clone = color_regex.exec(
+            clone = alpha_regex.exec(
                 teams[team_i].parentElement.previousElementSibling.className
             );
 
@@ -88,7 +95,7 @@ function getTeam() {
  */
 function getOrder() {
     var team = getTeam();
-    var order = ["black", team, "neutral"];
+    var order = ["black", team];
 
     Object.values(class_to_color).forEach(function (color) {
         if (order.indexOf(color) === -1) {
@@ -96,7 +103,7 @@ function getOrder() {
         }
     });
 
-    return order.concat("unknown");
+    return order.concat(["neutral", "unknown"]);
 }
 
 /**
@@ -106,20 +113,25 @@ function getCards() {
     var order = [];
     var groups = {};
     var group;
-    var cards = document.querySelectorAll(
-        '.field .card, [id^="cardtileinner_"]'
-    );
+    var cards = document.querySelectorAll(".field .card, .grid_square");
     var card_i = 0;
     var text_to_colour = cardToColour();
     var text;
+    var index = 0;
 
     for (card_i; card_i < cards.length; card_i += 1) {
         if (is_asterix) {
-            group = color_regex.exec(cards[card_i].style.backgroundImage);
+            if (cards[card_i].children[index].tagName === "A") {
+                index = 1;
+            }
+            group = color_regex.exec(
+                cards[card_i].children[index].children[0].style.backgroundImage
+            );
         } else {
             group = color_regex.exec(cards[card_i].className);
         }
-        group = group.groups.color;
+
+        group = group ? group.groups.color : "neutral"; // not sure about this
         text = cards[card_i].querySelectorAll(".word, center")[0].innerText;
         if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
             group = text_to_colour[text];
@@ -484,7 +496,7 @@ function mouseAction(event) {
     var button_i = 0;
     while (
         !target.classList.contains("card") &&
-        !target.classList.contains("cardtiles")
+        !target.classList.contains("grid_square")
     ) {
         target = target.parentElement;
     }
