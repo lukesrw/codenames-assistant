@@ -141,8 +141,7 @@ function getCards() {
 
                 group = color_regex.exec(group);
                 group = group ? group.groups.color : "neutral"; // not sure about this
-                text = cards[card_i].querySelectorAll(".word, center")[0]
-                    .innerText;
+                text = cards[card_i].querySelector(".word, center").innerText;
             }
 
             if (!Object.prototype.hasOwnProperty.call(groups, group)) {
@@ -311,13 +310,16 @@ function upperCase(input) {
  * @returns {string} given clue
  */
 function getClue() {
-    var clue = document.querySelector(".clue:not(.logEntry)");
+    var clue = document.querySelector(
+        ".clue:not(.logEntry), #word_summary_area_id"
+    );
     var clue_number = document.querySelector(".clueNumber");
     var clue_next;
 
     if (clue) {
         clue_next =
             clue.innerText + (clue_number ? " " + clue_number.innerText : "");
+        clue_next = clue_next.replace(/\s{1,}/gu, " ");
 
         if (clue_last !== clue_next) {
             main.runtime.sendMessage({
@@ -356,7 +358,7 @@ function doCombinations() {
             if (group.name === "unknown") {
                 group.cards.forEach(function (card) {
                     var word = upperCase(
-                        card.querySelectorAll(".word, center")[0].innerText
+                        card.querySelector(".word, center").innerText
                     );
 
                     notes.value += word + "\n";
@@ -482,9 +484,10 @@ function doGroups() {
         notes.value += upperCase(group.name) + ":";
 
         group.cards.forEach(function (card) {
-            var word = card.querySelectorAll(".word, center")[0].innerText;
+            var word = card.querySelector(".word, center").innerText;
 
             notes.value += "\n    - " + upperCase(word);
+
             if (
                 cards[cards.length - 1].name !== "unknown" &&
                 Object.prototype.hasOwnProperty.call(card_to_colour, word)
@@ -515,13 +518,13 @@ function mouseAction(event) {
         case "mouseover":
             if (buttons.length === 0) {
                 buttons = makeMerriamWebsterButton(
-                    target.querySelectorAll(".word, center")[0].innerText
+                    target.querySelector(".word, center").innerText
                 );
                 buttons.style.float = "left";
                 target.insertBefore(buttons, target.firstChild);
 
                 buttons = makeWikipediaButton(
-                    target.querySelectorAll(".word, center")[0].innerText
+                    target.querySelector(".word, center").innerText
                 );
                 buttons.style.float = "left";
                 target.insertBefore(buttons, target.firstChild);
