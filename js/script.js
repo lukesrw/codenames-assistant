@@ -12,7 +12,7 @@ var color_regex = new RegExp(
     "(?:card-|text-|bg-|default/)(?<color>[a-z]+)",
     "ui"
 );
-var alpha_regex = new RegExp("alpha-(?<color>[a-z]+)", "ui");
+var team_regex = new RegExp("(?:alpha|bg)-(?<color>[a-z]+)", "ui");
 var class_to_color = {
     danger: "red",
     primary: "blue",
@@ -78,7 +78,7 @@ function getTeam() {
         clone = clone.innerText.replace(" [CAPTAIN]", "").split(", ");
 
         if (clone.indexOf(team) > -1) {
-            clone = alpha_regex.exec(
+            clone = team_regex.exec(
                 teams[team_i].parentElement.previousElementSibling.className
             );
 
