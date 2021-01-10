@@ -7,24 +7,36 @@ var main = browser || chrome;
 var clue_last = false;
 var card_first_last = false;
 var do_once;
+var class_regex = new RegExp("(?:card|alpha|bg)-(?<color>\\w+)", "ui");
+var class_to_color = {
+    danger: "red",
+    primary: "blue",
+    success: "green"
+};
 
 /**
  * @returns {object} card name to colour map
  */
 function cardToColour() {
     var card_to_colour = {};
-    var cards = document.querySelectorAll(".logEntry.card-red, .logEntry.card-blue, .logEntry.card-gray");
+    var cards = document.querySelectorAll(
+        '#logBoard .logEntry, #overview_gamelog_id [class^="alpha-"]'
+    );
     var card_i = 0;
     var word;
+    var color;
 
     for (card_i; card_i < cards.length; card_i += 1) {
-        word = cards[card_i].querySelector("em:last-child").innerText;
-        if (cards[card_i].classList.contains("card-red")) {
-            card_to_colour[word] = "red";
-        } else if (cards[card_i].classList.contains("card-blue")) {
-            card_to_colour[word] = "blue";
-        } else {
-            card_to_colour[word] = "neutral";
+        word = cards[card_i].querySelector("em:last-child, strong");
+        if (word) {
+            word = word.innerText;
+            color = class_regex.exec(cards[card_i].className);
+
+            if (color) {
+                color = color.groups.color;
+                color = class_to_color[color] || color;
+                card_to_colour[word] = color;
+            }
         }
     }
 
@@ -35,9 +47,37 @@ function cardToColour() {
  * @returns {string} name of current team
  */
 function getTeam() {
-    var button = document.querySelector(".button[color]");
+    var teams;
+    var team_i;
+    var clone;
+    var class_regex;
 
-    return button ? button.getAttribute("color") : false;
+    // for codenames.game
+    var team = document.querySelector(".button[color]");
+    if (team) return team.getAttribute("color");
+
+    // for spy.asterix.gg
+    team = document.getElementById("my_username_id").innerText;
+    teams = document.querySelectorAll('[id^="tab-overview-"');
+
+    for (team_i = 0; team_i < teams.length; team_i += 1) {
+        clone = teams[team_i].cloneNode(true);
+        if (clone.children[0].classList.contains("alert")) {
+            clone.removeChild(clone.children[0]);
+        }
+        clone = clone.innerText.replace(" [CAPTAIN]", "").split(", ");
+
+        if (clone.indexOf(team) > -1) {
+            clone = class_regex.exec(
+                teams[team_i].parentElement.previousElementSibling.className
+            );
+
+            team = clone.groups.color;
+            break;
+        }
+    }
+
+    return class_to_color[team] || team;
 }
 
 /**
@@ -45,8 +85,15 @@ function getTeam() {
  */
 function getOrder() {
     var team = getTeam();
+    var order = ["black", team, "unknown"];
 
-    return ["black", team, team === "red" ? "blue" : "red", "neutral", "unknown"];
+    Object.values(class_to_color).forEach(function (color) {
+        if (order.indexOf(color) === -1) {
+            order.push(color);
+        }
+    });
+
+    return order.concat("unknown");
 }
 
 /**
@@ -179,7 +226,8 @@ function getClue() {
     var clue_next;
 
     if (clue) {
-        clue_next = clue.innerText + (clue_number ? " " + clue_number.innerText : "");
+        clue_next =
+            clue.innerText + (clue_number ? " " + clue_number.innerText : "");
 
         if (clue_last !== clue_next) {
             main.runtime.sendMessage({
@@ -268,7 +316,10 @@ function makeButton(text, href) {
  * @returns {HTMLDivElement} new button
  */
 function makeMerriamWebsterButton(input) {
-    var button = makeButton("Merriam Webster", "https://www.merriam-webster.com/dictionary/" + input.toLowerCase());
+    var button = makeButton(
+        "Merriam Webster",
+        "https://www.merriam-webster.com/dictionary/" + input.toLowerCase()
+    );
 
     button.style.marginRight = "0.5rem";
     button.children[0].style.borderTopLeftRadius = "0";
@@ -283,7 +334,10 @@ function makeMerriamWebsterButton(input) {
  * @returns {HTMLDivElement} new button
  */
 function makeWikipediaButton(input) {
-    var button = makeButton("Wikipedia", "https://en.wikipedia.org/wiki/" + input.toLowerCase());
+    var button = makeButton(
+        "Wikipedia",
+        "https://en.wikipedia.org/wiki/" + input.toLowerCase()
+    );
 
     button.children[0].style.borderTopRightRadius = "0";
     button.children[0].style.borderBottomRightRadius = "0";
@@ -306,7 +360,10 @@ function getButton() {
     define_button = container.querySelector("a");
 
     if (!define_button) {
-        container.insertBefore(makeMerriamWebsterButton(clue), container.firstChild);
+        container.insertBefore(
+            makeMerriamWebsterButton(clue),
+            container.firstChild
+        );
         container.insertBefore(makeWikipediaButton(clue), container.firstChild);
     }
 }
@@ -357,11 +414,15 @@ function mouseAction(event) {
     switch (event.type) {
         case "mouseover":
             if (buttons.length === 0) {
-                buttons = makeMerriamWebsterButton(target.querySelector(".word").innerText);
+                buttons = makeMerriamWebsterButton(
+                    target.querySelector(".word").innerText
+                );
                 buttons.style.float = "left";
                 target.insertBefore(buttons, target.firstChild);
 
-                buttons = makeWikipediaButton(target.querySelector(".word").innerText);
+                buttons = makeWikipediaButton(
+                    target.querySelector(".word").innerText
+                );
                 buttons.style.float = "left";
                 target.insertBefore(buttons, target.firstChild);
             }
@@ -369,7 +430,9 @@ function mouseAction(event) {
 
         case "mouseleave":
             for (button_i; button_i < buttons.length; button_i += 1) {
-                buttons[button_i].parentElement.parentElement.removeChild(buttons[button_i].parentElement);
+                buttons[button_i].parentElement.parentElement.removeChild(
+                    buttons[button_i].parentElement
+                );
             }
             break;
     }
@@ -385,8 +448,14 @@ function addPeakListener(wrappers, target) {
         var wrapper_j = 0;
 
         for (wrapper_j; wrapper_j < wrappers.length; wrapper_j += 1) {
-            if (wrappers[wrapper_j] !== target && wrappers[wrapper_j].style.top !== "16px") {
-                wrappers[wrapper_j].classList.toggle("peak", !target.classList.contains("peak"));
+            if (
+                wrappers[wrapper_j] !== target &&
+                wrappers[wrapper_j].style.top !== "16px"
+            ) {
+                wrappers[wrapper_j].classList.toggle(
+                    "peak",
+                    !target.classList.contains("peak")
+                );
             }
         }
     });
