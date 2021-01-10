@@ -3,7 +3,7 @@
 "use strict";
 
 var ONE_SECOND_IN_MS = 1000;
-// var main = browser || chrome;
+var main = browser || chrome;
 var clue_last = false;
 var card_first_last = false;
 var do_once;
@@ -88,7 +88,7 @@ function getTeam() {
  */
 function getOrder() {
     var team = getTeam();
-    var order = ["black", team, "unknown"];
+    var order = ["black", team, "neutral"];
 
     Object.values(class_to_color).forEach(function (color) {
         if (order.indexOf(color) === -1) {
@@ -153,7 +153,6 @@ function getNotes() {
     );
     var notes = sidebar_red[0].nextElementSibling;
     var notes_heading;
-    var notes_heading_title;
     var notes_heading_text;
     var notes_header_elements;
     var notes_heading_groups;
@@ -165,8 +164,8 @@ function getNotes() {
         notes = document.createElement("div");
         notes.classList.add("logBoardWrapper", "card");
 
-        // change which corners are rounded
         if (!is_asterix) {
+            // change which corners are rounded
             notes.style.borderTopLeftRadius = "0";
             notes.style.borderBottomLeftRadius = "0";
             notes.style.borderTopRightRadius = "1rem";
@@ -188,10 +187,6 @@ function getNotes() {
         }
 
         notes.appendChild(notes_heading);
-
-        notes_heading_title = document.createElement("p");
-        notes_heading_title.classList.add("title", "mb-0");
-        // notes_heading.appendChild(notes_heading_title);
 
         if (is_asterix) {
             notes_heading_text = document.createElement("h6");
@@ -368,7 +363,12 @@ function makeButton(text, href) {
     var define_button_container = document.createElement("div");
 
     define_button = document.createElement("a");
-    define_button.classList.add("jsx-198695588", "button");
+    define_button.classList.add(
+        "jsx-198695588",
+        "button",
+        "btn",
+        "btn-primary"
+    );
     define_button.href = href;
     define_button.target = "_blank";
     define_button.innerText = text
@@ -482,7 +482,10 @@ function mouseAction(event) {
     var target = event.target;
     var buttons;
     var button_i = 0;
-    while (!target.classList.contains("card")) {
+    while (
+        !target.classList.contains("card") &&
+        !target.classList.contains("cardtiles")
+    ) {
         target = target.parentElement;
     }
     buttons = target.querySelectorAll("a");
@@ -540,7 +543,6 @@ function addPeakListener(wrappers, target) {
 document.body.addEventListener("mouseover", function () {
     var cards = getCards();
     var credits;
-    // var card_i = 0;
     var wrappers = document.querySelectorAll(".tokenWrapper");
     var wrapper_i = 0;
 
