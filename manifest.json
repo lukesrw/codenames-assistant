@@ -10,7 +10,10 @@
     "content_scripts": [
         {
             "js": ["js/script.js"],
-            "matches": ["https://codenames.game/room/*"]
+            "matches": [
+                "https://codenames.game/room/*",
+                "https://spy.asterix.gg/room/*"
+            ]
         }
     ],
     "description": "Codenames Assistant",
