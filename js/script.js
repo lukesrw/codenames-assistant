@@ -311,7 +311,7 @@ function upperCase(input) {
  */
 function getClue() {
     var clue = document.querySelector(
-        ".clue:not(.logEntry), #word_summary_area_id"
+        ".clue:not(.logEntry), #word_summary_area_id strong"
     );
     var clue_number = document.querySelector(".clueNumber");
     var clue_next;
@@ -420,6 +420,7 @@ function makeMerriamWebsterButton(input) {
         "https://www.merriam-webster.com/dictionary/" + input.toLowerCase()
     );
 
+    button.classList.add("float-left");
     button.style.marginRight = "0.5rem";
     button.children[0].style.borderTopLeftRadius = "0";
     button.children[0].style.borderBottomLeftRadius = "0";
@@ -438,6 +439,7 @@ function makeWikipediaButton(input) {
         "https://en.wikipedia.org/wiki/" + input.toLowerCase()
     );
 
+    button.classList.add("float-left");
     button.children[0].style.borderTopRightRadius = "0";
     button.children[0].style.borderBottomRightRadius = "0";
 
@@ -448,7 +450,9 @@ function makeWikipediaButton(input) {
  * @returns {void}
  */
 function getButton() {
-    var container = document.querySelector(".clueWrapper");
+    var container = document.querySelector(
+        ".clueWrapper, #word_summary_area_id .alert"
+    );
     var define_button;
     var clue = getClue().toLowerCase();
 
