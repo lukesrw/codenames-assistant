@@ -57,6 +57,18 @@ function cardToColour() {
 }
 
 /**
+ * @returns {string} username
+ */
+function getUsername() {
+    var username = document.querySelector(".button[color]");
+
+    if (username) return username.innerText;
+
+    // for spy.asterix.gg
+    return document.getElementById("my_username_id").innerText;
+}
+
+/**
  * @returns {string} name of current team
  */
 function getTeam() {
@@ -69,7 +81,7 @@ function getTeam() {
     if (team) return team.getAttribute("color");
 
     // for spy.asterix.gg
-    team = document.getElementById("my_username_id").innerText;
+    team = getUsername();
     teams = document.querySelectorAll('[id^="tab-overview-"');
 
     for (team_i = 0; team_i < teams.length; team_i += 1) {
@@ -119,7 +131,7 @@ function getCards() {
     var order = [];
     var groups = {};
     var group;
-    var cards = document.querySelectorAll(".field .card, .grid_square");
+    var cards = document.querySelectorAll(".coverToken .card, .grid_square");
     var card_i = 0;
     var text_to_colour = cardToColour();
     var text;
@@ -182,15 +194,93 @@ function getNotes() {
         "#teamBoard-red, #match_overview_area"
     );
     var notes = sidebar_red[0].nextElementSibling;
-    var notes_heading;
-    var notes_heading_text;
-    var notes_header_elements;
-    var notes_heading_groups;
-    var notes_heading_combinations;
-    var notes_container;
+    var textarea_container;
+    var textarea;
+    var title;
     var action_icon;
+    var do_groups;
+    var do_combin;
 
     if (!notes) {
+        // textarea
+        textarea = document.createElement("textarea");
+        textarea.spellcheck = false;
+        textarea.classList.add("flex-auto", "scroll");
+        textarea.style.width = "100%";
+        textarea.style.height = "99%";
+        textarea.style.border = "0";
+        textarea.style.font = "inherit";
+        textarea.style.fontSize = "0.75rem";
+        textarea.style.outline = "none";
+
+        // groups
+        do_groups = document.createElement("a");
+        do_groups.style.marginLeft = "0.5ch";
+        do_groups.style.padding = "0";
+        do_groups.classList.add("list-icons-item", "mr-3");
+        do_groups.innerText = "Group";
+        do_groups.href = "javascript:void 0";
+        // eslint-disable-next-line no-use-before-define
+        if (typeof doGroups === "function") do_groups.onclick = doGroups;
+
+        // combinations
+        do_combin = document.createElement("a");
+        do_combin.style.marginLeft = "0.5ch";
+        do_combin.style.padding = "0";
+        do_combin.classList.add("list-icons-item");
+        do_combin.innerText = "Combinations";
+        do_combin.href = "javascript:void 0";
+        // eslint-disable-next-line no-use-before-define
+        if (typeof doCombinations === "function") {
+            // eslint-disable-next-line no-use-before-define
+            do_combin.onclick = doCombinations;
+        }
+
+        if (IS_ASTERIX) {
+            // textarea
+            textarea.style.padding = ".5rem 1.25rem";
+            textarea.style.minHeight = "185px";
+
+            // actions
+            action_icon = document.createElement("i");
+            action_icon.classList.add("icon-users", "mr-2");
+            do_groups.insertBefore(action_icon, do_groups.firstChild);
+            action_icon = document.createElement("i");
+            action_icon.classList.add("icon-text-width", "mr-2");
+            do_combin.insertBefore(action_icon, do_combin.firstChild);
+        } else {
+            // textarea
+            textarea.style.padding = "0.5rem";
+            textarea.style.resize = "none";
+
+            // actions
+            do_groups.innerText = "(" + do_groups.innerText.toLowerCase() + ")";
+            do_combin.innerText = "(" + do_combin.innerText.toLowerCase() + ")";
+
+            notes = document
+                .getElementById("teamBoard-blue")
+                .nextElementSibling.cloneNode(true);
+            document
+                .getElementById("teamBoard-red")
+                .parentElement.appendChild(notes);
+
+            notes.classList.add("bg-white").remove("opacity-50");
+            textarea_container = notes.children[1];
+            title = notes.querySelector("p");
+            title.parentElement.classList.remove("flex-none").add("flex");
+        }
+
+        console.log("textarea container", textarea_container);
+        while (textarea_container.firstChild) {
+            textarea_container.removeChild(textarea_container.firstChild);
+        }
+
+        title.innerText = "Notes";
+        title.parentElement.appendChild(do_groups);
+        textarea_container.appendChild(textarea);
+        title.parentElement.appendChild(do_combin);
+
+        /*
         notes = document.createElement("div");
         notes.classList.add("logBoardWrapper", "card");
 
@@ -230,72 +320,7 @@ function getNotes() {
         notes_header_elements = document.createElement("span");
         notes_header_elements.classList.add("header-elements");
         notes_heading.appendChild(notes_header_elements);
-
-        notes_heading_groups = document.createElement("a");
-        notes_heading_groups.style.marginLeft = "0.5ch";
-        notes_heading_groups.style.padding = "0";
-        notes_heading_groups.classList.add("title", "list-icons-item", "mr-3");
-        notes_heading_groups.innerText = "Group";
-        if (IS_ASTERIX) {
-            action_icon = document.createElement("i");
-            action_icon.classList.add("icon-users", "mr-2");
-            notes_heading_groups.insertBefore(
-                action_icon,
-                notes_heading_groups.firstChild
-            );
-        } else {
-            notes_heading_groups.innerText =
-                "(" + notes_heading_groups.innerText.toLowerCase() + ")";
-        }
-        notes_heading_groups.href = "javascript:void 0";
-        // eslint-disable-next-line no-use-before-define
-        if (typeof doGroups === "function") {
-            // eslint-disable-next-line no-use-before-define
-            notes_heading_groups.onclick = doGroups;
-        }
-        notes_header_elements.appendChild(notes_heading_groups);
-
-        notes_heading_combinations = document.createElement("a");
-        notes_heading_combinations.style.marginLeft = "0.5ch";
-        notes_heading_combinations.style.padding = "0";
-        notes_heading_combinations.classList.add("title", "list-icons-item");
-        notes_heading_combinations.innerText = "Combinations";
-        if (IS_ASTERIX) {
-            action_icon = document.createElement("i");
-            action_icon.classList.add("icon-text-width", "mr-2");
-            notes_heading_combinations.insertBefore(
-                action_icon,
-                notes_heading_combinations.firstChild
-            );
-        } else {
-            notes_heading_combinations.innerText =
-                "(" + notes_heading_combinations.innerText.toLowerCase() + ")";
-        }
-        notes_heading_combinations.href = "javascript:void 0";
-        // eslint-disable-next-line no-use-before-define
-        if (typeof doCombinations === "function") {
-            // eslint-disable-next-line no-use-before-define
-            notes_heading_combinations.onclick = doCombinations;
-        }
-        notes_header_elements.appendChild(notes_heading_combinations);
-
-        notes_container = document.createElement("textarea");
-        notes_container.spellcheck = false;
-        notes_container.classList.add("flex-auto", "scroll");
-        if (IS_ASTERIX) {
-            notes_container.style.padding = ".5rem 1.25rem";
-            notes_container.style.minHeight = "185px";
-        } else {
-            notes_container.style.padding = "0.5rem";
-        }
-        notes_container.style.border = "0";
-        notes_container.style.font = "inherit";
-        notes_container.style.fontSize = "0.75rem";
-        notes_container.style.outline = "none";
-        if (sidebar_red[0].id === "teamBoard-red") {
-            notes_container.style.resize = "none";
-        }
-        notes.appendChild(notes_container);
+        */
     }
 
     return notes.querySelector("textarea");
@@ -588,6 +613,9 @@ function addPeakListener(wrappers, target) {
 }
 
 document.body.addEventListener("mouseover", function () {
+    getNotes();
+
+    /*
     var cards = getCards();
     var credits;
     var wrappers = document.querySelectorAll(".tokenWrapper");
@@ -622,4 +650,5 @@ document.body.addEventListener("mouseover", function () {
             do_once = true;
         }
     }
+    */
 });
