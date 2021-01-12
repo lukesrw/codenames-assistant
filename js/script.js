@@ -12,6 +12,7 @@ var REGEX_COLOR = new RegExp(
 var REGEX_TEAM = new RegExp("(?:alpha|bg)-(?<color>[a-z]+)", "ui");
 var CLASS_TO_COLOR = {
     danger: "red",
+    gray: "unknown",
     primary: "blue",
     success: "green"
 };
@@ -19,7 +20,7 @@ var CLASS_TO_COLOR = {
 var main;
 var clue_last = false;
 var card_first_last = false;
-var do_once;
+var do_once = true;
 
 if (typeof browser !== "undefined") {
     main = browser;
@@ -131,11 +132,13 @@ function getCards() {
     var order = [];
     var groups = {};
     var group;
-    var cards = document.querySelectorAll(".coverToken .card, .grid_square");
+    var cards = document.querySelectorAll(".wordToken .card, .grid_square");
     var card_i = 0;
     var text_to_colour = cardToColour();
     var text;
     var index = 0;
+
+    // console.log(cards);
 
     for (card_i; card_i < cards.length; card_i += 1) {
         if (Object.prototype.hasOwnProperty.call(text_to_colour, text)) {
@@ -164,14 +167,29 @@ function getCards() {
             }
             text = cards[card_i].querySelector(".word, center").innerText;
         } else {
-            group = cards[card_i].classList[2] || "unknown";
+            group = cards[card_i].children[0].classList[2] || "unknown";
         }
+
+        group = CLASS_TO_COLOR[group] || group;
 
         if (!Object.prototype.hasOwnProperty.call(groups, group)) {
             groups[group] = [];
         }
 
         groups[group].push(cards[card_i]);
+    }
+
+    /**
+     * some may call this a hack, but what do they know?
+     *
+     * @todo improve hack
+     */
+    if (
+        Object.keys(groups).length > 1 &&
+        Object.keys(text_to_colour).length === 0
+    ) {
+        groups.neutral = groups.unknown;
+        delete groups.unknown;
     }
 
     getOrder().forEach(function (group) {
@@ -200,6 +218,7 @@ function getNotes() {
     var action_icon;
     var do_groups;
     var do_combin;
+    var actions;
 
     if (!notes) {
         // textarea
@@ -210,12 +229,11 @@ function getNotes() {
         textarea.style.height = "99%";
         textarea.style.border = "0";
         textarea.style.font = "inherit";
-        textarea.style.fontSize = "0.75rem";
+        textarea.style.fontSize = "10pt";
         textarea.style.outline = "none";
 
         // groups
         do_groups = document.createElement("a");
-        do_groups.style.marginLeft = "0.5ch";
         do_groups.style.padding = "0";
         do_groups.classList.add("list-icons-item", "mr-3");
         do_groups.innerText = "Group";
@@ -225,7 +243,6 @@ function getNotes() {
 
         // combinations
         do_combin = document.createElement("a");
-        do_combin.style.marginLeft = "0.5ch";
         do_combin.style.padding = "0";
         do_combin.classList.add("list-icons-item");
         do_combin.innerText = "Combinations";
@@ -254,31 +271,47 @@ function getNotes() {
             textarea.style.resize = "none";
 
             // actions
-            do_groups.innerText = "(" + do_groups.innerText.toLowerCase() + ")";
-            do_combin.innerText = "(" + do_combin.innerText.toLowerCase() + ")";
+            do_groups.style.borderBottom = "1px dashed";
+            do_combin.style.borderBottom = "1px dashed";
 
             notes = document
-                .getElementById("teamBoard-blue")
-                .nextElementSibling.cloneNode(true);
-            document
                 .getElementById("teamBoard-red")
-                .parentElement.appendChild(notes);
+                .parentElement.appendChild(
+                    document
+                        .getElementById("teamBoard-blue")
+                        .nextElementSibling.cloneNode(true)
+                );
 
-            notes.classList.add("bg-white").remove("opacity-50");
+            notes.classList.add("bg-white");
+            notes.classList.remove("opacity-50");
             textarea_container = notes.children[1];
+
             title = notes.querySelector("p");
-            title.parentElement.classList.remove("flex-none").add("flex");
+
+            // actions
+            actions = title.parentElement.insertAdjacentElement(
+                "afterend",
+                title.parentElement.cloneNode(true)
+            );
+            actions.classList.remove("flex-none");
+            actions.classList.add("flex");
+            actions.style.justifyContent = "space-evenly";
+            actions.style.fontSize = "10pt";
+            actions.style.color = "#00AAFF";
         }
 
-        console.log("textarea container", textarea_container);
         while (textarea_container.firstChild) {
             textarea_container.removeChild(textarea_container.firstChild);
         }
+        textarea_container.appendChild(textarea);
+
+        while (actions.firstChild) {
+            actions.removeChild(actions.firstChild);
+        }
+        actions.appendChild(do_groups);
+        actions.appendChild(do_combin);
 
         title.innerText = "Notes";
-        title.parentElement.appendChild(do_groups);
-        textarea_container.appendChild(textarea);
-        title.parentElement.appendChild(do_combin);
 
         /*
         notes = document.createElement("div");
@@ -532,7 +565,8 @@ function doGroups() {
         notes.value += upperCase(group.name) + ":";
 
         group.cards.forEach(function (card) {
-            var word = card.querySelector(".word, center").innerText;
+            var word = card.querySelector(".transition-opacity, center")
+                .innerText;
 
             notes.value += "\n    - " + upperCase(word);
 
@@ -612,8 +646,21 @@ function addPeakListener(wrappers, target) {
     });
 }
 
-document.body.addEventListener("mouseover", function () {
-    getNotes();
+/**
+ * @returns {void}
+ */
+function init() {
+    document.addEventListener("mousemove", function () {
+        var cards = getCards();
+
+        if (cards) {
+            if (do_once) {
+                do_once = false;
+
+                doGroups();
+            }
+        }
+    });
 
     /*
     var cards = getCards();
@@ -651,4 +698,8 @@ document.body.addEventListener("mouseover", function () {
         }
     }
     */
-});
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+if (document.readyState !== "loading") init();
