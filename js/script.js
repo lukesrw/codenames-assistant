@@ -630,15 +630,16 @@ function mouseAction(event) {
 function addPeakListener(wrappers, target) {
     target.addEventListener("click", function () {
         var wrapper_j = 0;
+        var is_peak = !target.children[0].classList.contains("peak");
 
         for (wrapper_j; wrapper_j < wrappers.length; wrapper_j += 1) {
             if (
                 wrappers[wrapper_j] !== target &&
-                wrappers[wrapper_j].style.top !== "16px"
+                wrappers[wrapper_j].style.zIndex.length > 0
             ) {
-                wrappers[wrapper_j].classList.toggle(
-                    "peak",
-                    !target.classList.contains("peak")
+                wrappers[wrapper_j].children[0].classList.replace(
+                    is_peak ? "cover" : "peak",
+                    is_peak ? "peak" : "cover"
                 );
             }
         }
@@ -652,10 +653,14 @@ function init() {
     document.addEventListener("mousemove", function () {
         var cards = getCards();
         var credits;
-        var wrappers = document.querySelectorAll(".cover");
+        var wrappers = document.querySelectorAll(".coverToken");
         var wrapper_i = 0;
 
-        if (cards) {
+        if (
+            cards.length &&
+            cards[0].cards.length &&
+            card_first_last !== cards[0].cards[0]
+        ) {
             card_first_last = cards[0].cards[0];
 
             Object.keys(cards).forEach(function (group) {
