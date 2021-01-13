@@ -633,21 +633,24 @@ function addPeakListener(wrappers, target) {
     wrappers = wrappers || document.querySelectorAll(".coverToken");
 
     if (wrappers && target) {
-        target.addEventListener("click", function () {
+        target.addEventListener("click", function (e) {
             var wrapper_j = 0;
             var is_peak = !target.children[0].classList.contains("peak");
 
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
+
             for (wrapper_j; wrapper_j < wrappers.length; wrapper_j += 1) {
-                if (
-                    wrappers[wrapper_j] !== target &&
-                    wrappers[wrapper_j].style.zIndex.length > 0
-                ) {
+                if (wrappers[wrapper_j].style.zIndex.length > 0) {
                     wrappers[wrapper_j].children[0].classList.replace(
                         is_peak ? "cover" : "peak",
                         is_peak ? "peak" : "cover"
                     );
                 }
             }
+
+            return false;
         });
 
         return true;
