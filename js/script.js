@@ -628,22 +628,40 @@ function mouseAction(event) {
  * @returns {void}
  */
 function addPeakListener(wrappers, target) {
-    target.addEventListener("click", function () {
-        var wrapper_j = 0;
-        var is_peak = !target.children[0].classList.contains("peak");
+    var wrapper_i = 0;
 
-        for (wrapper_j; wrapper_j < wrappers.length; wrapper_j += 1) {
-            if (
-                wrappers[wrapper_j] !== target &&
-                wrappers[wrapper_j].style.zIndex.length > 0
-            ) {
-                wrappers[wrapper_j].children[0].classList.replace(
-                    is_peak ? "cover" : "peak",
-                    is_peak ? "peak" : "cover"
-                );
+    wrappers = wrappers || document.querySelectorAll(".coverToken");
+
+    if (wrappers && target) {
+        target.addEventListener("click", function () {
+            var wrapper_j = 0;
+            var is_peak = !target.children[0].classList.contains("peak");
+
+            for (wrapper_j; wrapper_j < wrappers.length; wrapper_j += 1) {
+                if (
+                    wrappers[wrapper_j] !== target &&
+                    wrappers[wrapper_j].style.zIndex.length > 0
+                ) {
+                    wrappers[wrapper_j].children[0].classList.replace(
+                        is_peak ? "cover" : "peak",
+                        is_peak ? "peak" : "cover"
+                    );
+                }
             }
-        }
-    });
+        });
+
+        return true;
+    }
+
+    if (IS_ASTERIX) {
+        return false;
+    }
+
+    for (wrapper_i; wrapper_i < wrappers.length; wrapper_i += 1) {
+        addPeakListener(wrappers, wrappers[wrapper_i]);
+    }
+
+    return true;
 }
 
 /**
@@ -653,8 +671,6 @@ function init() {
     document.addEventListener("mousemove", function () {
         var cards = getCards();
         var credits;
-        var wrappers = document.querySelectorAll(".coverToken");
-        var wrapper_i = 0;
 
         if (
             cards.length &&
@@ -670,10 +686,6 @@ function init() {
                 });
             });
 
-            for (wrapper_i; wrapper_i < wrappers.length; wrapper_i += 1) {
-                addPeakListener(wrappers, wrappers[wrapper_i]);
-            }
-
             if (do_once) {
                 do_once = false;
 
@@ -683,6 +695,7 @@ function init() {
 
                 setInterval(getButton, ONE_SECOND_IN_MS);
 
+                addPeakListener();
                 getButton();
                 doGroups();
             }
