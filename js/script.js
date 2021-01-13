@@ -61,12 +61,11 @@ function cardToColour() {
  * @returns {string} username
  */
 function getUsername() {
-    var username = document.querySelector(".button[color]");
+    if (IS_ASTERIX) {
+        return document.getElementById("my_username_id").innerText;
+    }
 
-    if (username) return username.innerText;
-
-    // for spy.asterix.gg
-    return document.getElementById("my_username_id").innerText;
+    return window.localStorage.getItem("nickname");
 }
 
 /**
@@ -652,11 +651,34 @@ function addPeakListener(wrappers, target) {
 function init() {
     document.addEventListener("mousemove", function () {
         var cards = getCards();
+        var credits;
+        var wrappers = document.querySelectorAll(".cover");
+        var wrapper_i = 0;
 
         if (cards) {
+            card_first_last = cards[0].cards[0];
+
+            Object.keys(cards).forEach(function (group) {
+                cards[group].cards.forEach(function (card) {
+                    card.addEventListener("mouseover", mouseAction);
+                    card.addEventListener("mouseleave", mouseAction);
+                });
+            });
+
+            for (wrapper_i; wrapper_i < wrappers.length; wrapper_i += 1) {
+                addPeakListener(wrappers, wrappers[wrapper_i]);
+            }
+
             if (do_once) {
                 do_once = false;
 
+                credits = document.querySelector(".creditsWrapper");
+
+                if (credits) credits.style.bottom = "-4px";
+
+                setInterval(getButton, ONE_SECOND_IN_MS);
+
+                getButton();
                 doGroups();
             }
         }
@@ -665,22 +687,8 @@ function init() {
     /*
     var cards = getCards();
     var credits;
-    var wrappers = document.querySelectorAll(".tokenWrapper");
-    var wrapper_i = 0;
 
     if (cards) {
-        card_first_last = cards[0].cards[0];
-
-        Object.keys(cards).forEach(function (group) {
-            cards[group].cards.forEach(function (card) {
-                card.addEventListener("mouseover", mouseAction);
-                card.addEventListener("mouseleave", mouseAction);
-            });
-        });
-
-        for (wrapper_i; wrapper_i < wrappers.length; wrapper_i += 1) {
-            addPeakListener(wrappers, wrappers[wrapper_i]);
-        }
 
         if (!do_once) {
             credits = document.querySelector(".creditsWrapper");
