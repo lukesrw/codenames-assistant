@@ -423,6 +423,8 @@ function doCombinations() {
     var cards = getCards();
     var is_first = true;
 
+    console.log(notes, clue, cards, is_first);
+
     if (clue.length > 0) {
         notes.value = "";
 
@@ -704,29 +706,6 @@ function init() {
             }
         }
     });
-
-    /*
-    var cards = getCards();
-    var credits;
-
-    if (cards) {
-
-        if (!do_once) {
-            credits = document.querySelector(".creditsWrapper");
-
-            if (credits) credits.style.bottom = "-4px";
-
-            setInterval(function () {
-                getButton();
-            }, ONE_SECOND_IN_MS);
-
-            getButton();
-            doGroups();
-
-            do_once = true;
-        }
-    }
-    */
 }
 
 document.addEventListener("DOMContentLoaded", init);
