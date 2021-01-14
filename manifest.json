@@ -9,7 +9,13 @@
     },
     "content_scripts": [
         {
-            "js": ["js/script.js"],
+            "js": [
+                "js/lib/upperCase.js",
+                "js/lib/Card.js",
+                "js/lib/Player.js",
+                "js/lib/Board.js",
+                "js/script_new.js"
+            ],
             "matches": [
                 "https://codenames.game/room/*",
                 "https://spy.asterix.gg/room/*"
