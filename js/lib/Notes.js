@@ -26,9 +26,10 @@ function Notes() {
     };
 
     that.doCombinations = function () {
-        /**
-         * @todo combinations
-         */
+        that.textarea.node.value = "";
+        Card.getAll().forEach(function (card) {
+            that.textarea.node.value += card.getWord() + "\n";
+        });
     };
 
     // create textarea
@@ -67,18 +68,24 @@ function Notes() {
     if (that.title) that.title.innerText = "Notes";
 
     // empty actions, insert actions
-    while (that.actions.firstChild) {
-        that.actions.removeChild(that.actions.firstChild);
+    if (that.actions) {
+        while (that.actions.firstChild) {
+            that.actions.removeChild(that.actions.firstChild);
+        }
     }
     /**
      * @todo add actions
      */
 
     // empty textarea container, insert textarea
-    while (that.textarea.container.firstChild) {
-        that.textarea.container.removeChild(that.textarea.container.firstChild);
+    if (that.textarea.container) {
+        while (that.textarea.container.firstChild) {
+            that.textarea.container.removeChild(
+                that.textarea.container.firstChild
+            );
+        }
+        that.textarea.container.appendChild(that.textarea.node);
     }
-    that.textarea.container.appendChild(that.textarea.node);
 
     that.doGrouping();
 }
