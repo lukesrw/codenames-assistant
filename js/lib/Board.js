@@ -17,6 +17,12 @@ function Board() {
     that.getUsername = function () {
         if (!that.username) {
             switch (window.location.hostname) {
+                case "spy.asterix.gg":
+                    that.username = document.getElementById(
+                        "my_username_id"
+                    ).innerText;
+                    break;
+
                 default:
                     that.username = document.querySelector(
                         "button[color]"
@@ -59,10 +65,9 @@ function Board() {
         if (that.cards.length && that.cards[0].node === card.node) return false;
 
         // eslint-disable-next-line no-console
-        console.log(">> Codenames Assitant Initialized");
+        console.log(">> Codenames Assitant Initialized", do_once);
 
         that.cards = Card.getAll();
-        // that.notes = that.getNotes();
         that.notes = new Notes();
 
         if (do_once) {
