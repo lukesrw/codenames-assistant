@@ -50,7 +50,7 @@ function getTeam() {
 function getOrder() {
     var team = getTeam();
 
-    return ["black", team, team === "red" ? "blue" : "red", "neutral", "unknown"];
+    return ["black", team, team === "red" ? "blue" : "red", "unknown", "neutral", "gray"];
 }
 
 /**
@@ -380,7 +380,7 @@ function doGroups() {
 
             notes.value += "\n    - " + upperCase(word);
             if (
-                cards[cards.length - 1].name !== "unknown" &&
+                cards[cards.length - 2].name !== "unknown" &&
                 Object.prototype.hasOwnProperty.call(card_to_colour, word)
             ) {
                 notes.value += " ✔️";
@@ -465,12 +465,12 @@ document.body.addEventListener("mouseover", function () {
         if (!do_once) {
             document.querySelector(".creditsWrapper").style.bottom = "-4px";
 
-            timer_container = document.createElement("div");
-            left_container.appendChild(timer_container);
-
             gap = document.createElement("div");
             gap.classList.add("gap", "jsx-401347710");
             left_container.appendChild(gap);
+
+            timer_container = document.createElement("div");
+            left_container.appendChild(timer_container);
 
             timer = document.createElement("input");
             timer.classList.add("timer-value");
