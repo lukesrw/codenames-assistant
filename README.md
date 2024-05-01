@@ -4,7 +4,7 @@
 
 ### Firefox
 
-https://addons.mozilla.org/en-GB/firefox/addon/codenames-assistant/
+https://addons.mozilla.org/firefox/addon/codenames-assistant/
 
 ### Chrome
 
